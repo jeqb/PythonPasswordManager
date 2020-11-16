@@ -1,0 +1,1 @@
+python ./PythonPasswordManager/main.py
