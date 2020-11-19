@@ -6,7 +6,8 @@ from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 def password_to_bytes(password: str, salt:bytes, byte_size: int=32) -> bytes:
     """
     takes a password and a salt (in bytes) and converts to a
-    base 64 encoded key.
+    base 64 encoded key. Convert to 32-bytes for the encryption tool.
+    
     example usage:
         password = "my secret password"
         salt = os.urandom(16)
