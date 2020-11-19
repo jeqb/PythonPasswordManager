@@ -1,3 +1,4 @@
 from .Entry import Entry
 from .Note import Note
-from .database_connection import create_session
+from .Base import Base
+from .database_tools import create_connection, create_database_engine, create_tables
