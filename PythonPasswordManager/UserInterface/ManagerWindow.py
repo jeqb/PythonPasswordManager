@@ -1,14 +1,27 @@
 import sys
+import os
+from pathlib import Path
 from PyQt5 import QtWidgets, QtGui, QtCore
+
 
 class ManagerWindow(QtWidgets.QMainWindow):
 
 
-    def __init__(self):
+    def __init__(self, settings, Api):
+        """
+            1. run super method for base class
+            2. check that the settings are all good.
+            3. test connection to database
+            4. start ui
+        """
+        # 1.
         super().__init__()
 
-        # Load settings and initialize API
-        
+        # 2.
+        self.settings = settings
+        if settings.is_valid() == False:
+            self.create_database_routine()
+
 
         # window settings
         self.title = "Python Password Manager"
@@ -24,7 +37,7 @@ class ManagerWindow(QtWidgets.QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         # create ui components
-        self.call_ui_components()
+        # self.call_ui_components()
 
         # maximals maximize!
         self.show()
@@ -32,9 +45,83 @@ class ManagerWindow(QtWidgets.QMainWindow):
 
     def call_ui_components(self):
         self.create_password_prompt_container()
+        # self.create_database_prompt_container()
+
+
+    def create_database_routine(self):
+        """
+        1. Check if there is a database directory
+            if no directory in settings:
+                1. tell user to select directory
+                2. create database with tables
+        2. connect to database and create tables
+        3. add database directory to settings
+        4. export settings to json file
+        """
+
+        # 1.
+        yield self.get_database_path_prompt_container()
+
+        # 2.
+
+        # 3.
+
+        # 4.
+        cwd = os.getcwd()
+        cwd = Path(cwd)
+        settings_file = cwd / 'password_manager_settings.json'
+        self.settings.export_settings_to_json(settings_file)
+        print('exported settings.json')
+
+
+    def get_database_path_prompt_container(self):
+        # make the QGroupBox
+        DatabasePromptContainer = QtWidgets.QGroupBox(self)
+        DatabasePromptContainer.setGeometry(QtCore.QRect(270, 110, 251, 191))
+        DatabasePromptContainer.setTitle("")
+        DatabasePromptContainer.setObjectName("Select Database Folder")
+
+        # make the password label
+        DatabaseMessage = QtWidgets.QLabel(DatabasePromptContainer)
+        DatabaseMessage.setGeometry(QtCore.QRect(60, 53, 111, 53))
+        DatabaseMessage.setObjectName("DatabaseMessage")
+        DatabaseMessage.setText(" No Database exists.")
+        DatabaseMessage2 = QtWidgets.QLabel(DatabasePromptContainer)
+        DatabaseMessage2.setGeometry(QtCore.QRect(60, 70, 111, 53))
+        DatabaseMessage2.setObjectName("DatabaseMessage")
+        DatabaseMessage2.setText("Choose a directory")
+
+        # make the QPushButton
+        OpenBrowser = QtWidgets.QPushButton(DatabasePromptContainer)
+        OpenBrowser.setGeometry(QtCore.QRect(60, 120, 131, 51))
+        OpenBrowser.setObjectName("OpenFileBrowser")
+        OpenBrowser.setText("Open File Browser")
+        OpenBrowser.clicked.connect(self.set_database_directory)
+
+        # give the main window access to all the items
+        self.DatabasePromptContainer = DatabasePromptContainer
+
+
+    def set_database_directory(self):
+        """
+        Call this to create a Folder browser, get the directory from the browser
+        and then set the self.settings.database_file_path to that directory
+        """
+
+        database_directory = self.create_folder_browser()
+        database_directory = database_directory + '/password_database.db'
+        database_directory = Path(database_directory)
+
+        self.settings.database_file_path = str(database_directory)
+
+
+    def delete_database_prompt_container(self):
+        self.DatabasePromptContainer.deleteLater()
 
 
     def create_password_prompt_container(self):
+        """ This is the prompt used to create the database password """
+
         # make the QGroupBox
         PasswordPromptContainer = QtWidgets.QGroupBox(self)
         PasswordPromptContainer.setGeometry(QtCore.QRect(270, 110, 251, 191))
@@ -67,6 +154,10 @@ class ManagerWindow(QtWidgets.QMainWindow):
 
 
     def submit_password(self):
+        """
+        used in conjunction with create_password_prompt_container() to register
+        the password entered by user.
+        """
         value = self.PasswordField.toPlainText()
 
         print(value)
@@ -75,4 +166,21 @@ class ManagerWindow(QtWidgets.QMainWindow):
 
 
     def delete_password_prompt_container(self):
+        """ Makes the password prompt go away """
         self.PasswordPromptContainer.deleteLater()
+
+
+    def create_file_browser(self):
+        """
+        Creates the file browser to do stuff with.
+        """
+        FileBrowser = QtWidgets.QFileDialog()
+        file_path = FileBrowser.getOpenFileName(self, 'Select File')
+        return file_path
+
+
+    def create_folder_browser(self):
+        """ Create the browser to select a file directory """
+        FolderBrowser = QtWidgets.QFileDialog()
+        directory = FolderBrowser.getExistingDirectory(self, 'Select a folder')
+        return directory

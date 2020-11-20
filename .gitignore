@@ -42,3 +42,4 @@ pydevd*.log
 nodeLanguageServer/**
 nodeLanguageServer.*/**
 database.db
+password_manager_settings.json
