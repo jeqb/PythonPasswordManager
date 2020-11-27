@@ -3,8 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
-from .actions import get_notes, create_password, create_note, select_password
-
+from .Actions import get_notes, create_password, create_note, select_password
 
 class MainWindow(QMainWindow):
     def __init__(self, api, *args, **kwargs):
