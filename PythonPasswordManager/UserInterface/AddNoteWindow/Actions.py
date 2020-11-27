@@ -11,22 +11,27 @@ def cancel(parent_widget):
     parent_widget.close()
 
 def add_note(parent_widget):
-    try:
-        # create the note in the database
-        api = parent_widget.api
-        note_content = parent_widget.note_entry.text()
-        parent_widget.api.add_note(note_content)
+    note_content = parent_widget.note_entry.text()
 
-        # update the table in the main window
-        parent_widget.parent_widget.tab_changed()
-        
-        # close the AddNoteWindow
-        parent_widget.close()
-    except Exception as e:
-        traceback_string = traceback.format_exc()
-        e_message = str(e)
+    if note_content == "":
+        message = "There is no Note content to store"
+        QMessageBox.information(parent_widget, "Missing Info", message)
+    else:
+        try:
+            # create the note in the database
+            api = parent_widget.api
+            parent_widget.api.add_note(note_content)
 
-        message = f"An error has occurred.\nMessage is: \
-            {e_message}\nTraceback is: {traceback_string}"
+            # update the table in the main window
+            parent_widget.parent_widget.tab_changed()
+            
+            # close the AddNoteWindow
+            parent_widget.close()
+        except Exception as e:
+            traceback_string = traceback.format_exc()
+            e_message = str(e)
 
-        QMessageBox.information(parent_widget, "Error has occurred", message)
+            message = f"An error has occurred.\nMessage is: \
+                {e_message}\nTraceback is: {traceback_string}"
+
+            QMessageBox.information(parent_widget, "Error has occurred", message)
