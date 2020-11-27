@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
 from ..AddNoteWindow import AddNoteWindow
+from ..AddPasswordWindow import AddPasswordWindow
 
 
 def populate_password_table(root_widget):
@@ -26,8 +27,12 @@ def get_password_by_id(root_widget):
 
 
 def create_password(root_widget):
-    # TODO: flesh out method
-    pass
+    """
+    Creates the AddPasswordWindow on the screen. This window
+    then handles the adding of the note to the database.
+    """
+    api = root_widget.api
+    root_widget.new_note = AddPasswordWindow(api)
 
 
 def update_password(root_widget):
