@@ -7,8 +7,11 @@ from PIL import Image
 from .Actions import cancel, add_note
 
 class AddNoteWindow(QWidget):
-    def __init__(self, api):
+    def __init__(self, parent_widget, api):
         super().__init__()
+
+        # keep a reference to the main UI window
+        self.parent_widget = parent_widget
 
         # database connection
         self.api = api

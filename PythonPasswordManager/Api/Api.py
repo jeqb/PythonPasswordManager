@@ -29,3 +29,8 @@ class Api():
         result = self.note_store.get_notes()
 
         return result
+
+    def add_note(self, content_string):
+        note = Note(Content=content_string)
+
+        self.note_store.create_note(note)
