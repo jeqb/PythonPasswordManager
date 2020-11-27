@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from PyQt5 import QtWidgets
 
-from UserInterface import ManagerWindow, MainWindow
+from UserInterface import MainWindow
 from Settings import Settings
 from Api import Api
 

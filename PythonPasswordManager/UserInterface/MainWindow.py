@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
+from .actions import get_notes, create_password, create_note, select_password
+
 
 class MainWindow(QMainWindow):
     def __init__(self, api, *args, **kwargs):
@@ -28,10 +30,10 @@ class MainWindow(QMainWindow):
         self.tab_widget()
         self.widgets()
         self.layouts()
-        self.get_notes()
+        get_notes(self)
 
     def tab_changed(self):
-        self.get_notes()
+        get_notes(self)
 
     def tool_bar(self):
         """
@@ -44,13 +46,13 @@ class MainWindow(QMainWindow):
         # Add Password Button
         self.add_password_button=QAction(QIcon('PythonPasswordManager/icons/add.png'),"Add Password",self)
         self.tool_bar.addAction(self.add_password_button)
-        self.add_password_button.triggered.connect(self.create_password)
+        self.add_password_button.triggered.connect(lambda: create_password(self))
         self.tool_bar.addSeparator()
 
         # Add Note Button
         self.add_note_button=QAction(QIcon('PythonPasswordManager/icons/users.png'),"Add Note",self)
         self.tool_bar.addAction(self.add_note_button)
-        self.add_note_button.triggered.connect(self.create_note)
+        self.add_note_button.triggered.connect(lambda: create_note(self))
         self.tool_bar.addSeparator()
 
     def tab_widget(self):
@@ -86,7 +88,7 @@ class MainWindow(QMainWindow):
         self.password_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
         self.password_table.horizontalHeader().setSectionResizeMode(2,QHeaderView.Stretch)
         # add behavior
-        self.password_table.doubleClicked.connect(self.select_password)
+        self.password_table.doubleClicked.connect(lambda: select_password(self))
 
 
         # Right top layout widget
@@ -182,73 +184,3 @@ class MainWindow(QMainWindow):
         self.note_main_layout.addLayout(self.note_left_layout,70)
         self.note_main_layout.addWidget(self.note_right_groupbox,30)
         self.note_tab.setLayout(self.note_main_layout)
-
-
-    def populate_password_table(self):
-        # TODO: flesh out method
-        pass
-
-    def select_password(self):
-        # TODO: flesh out method
-        pass
-
-    def get_passwords(self):
-        # TODO: flesh out method.
-        pass
-
-    def get_password_by_id(self):
-        # TODO: flesh out method
-        pass
-
-    def create_password(self):
-        # TODO: flesh out method
-        pass
-
-    def update_password(self):
-        # TODO: flesh out method
-        pass
-
-    def delete_password(self):
-        # TODO: flesh out method
-        pass
-
-    def populate_note_table(self):
-        # TODO: flesh out method
-        pass
-
-    def select_note(self):
-        # TODO: flesh out method
-        pass
-
-    def get_notes(self):
-        # clear table
-        for i in reversed(range(self.note_table.rowCount())):
-            self.note_table.removeRow(i)
-
-        # call the database api
-        notes = self.api.get_notes()
-
-        # populate table
-        for note in notes:
-            id = str(note.Id)
-            content = str(note.Content)
-            row_number = self.note_table.rowCount()
-            self.note_table.insertRow(row_number)
-            self.note_table.setItem(row_number, 0, QTableWidgetItem(id))
-            self.note_table.setItem(row_number, 1, QTableWidgetItem(content))
-
-    def get_note_by_id(self):
-        # TODO: flesh out method
-        pass
-
-    def create_note(self):
-        # TODO: flesh out method
-        pass
-
-    def update_note(self):
-        # TODO: flesh out method
-        pass
-
-    def delete_note(self):
-        # TODO: flesh out method
-        pass
