@@ -6,6 +6,7 @@ class Entry(Base):
     __tablename__ = 'Entry'
 
     Id = Column(Integer, primary_key=True)
+    Website = Column(String)
     Username = Column(String)
     Email = Column(String)
     Password = Column(String)
