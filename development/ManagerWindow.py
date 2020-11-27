@@ -8,19 +8,10 @@ class ManagerWindow(QtWidgets.QMainWindow):
 
 
     def __init__(self, settings, Api):
-        """
-            1. run super method for base class
-            2. check that the settings are all good.
-            3. test connection to database
-            4. start ui
-        """
-        # 1.
         super().__init__()
 
-        # 2.
         self.settings = settings
-        if settings.is_valid() == False:
-            self.create_database_routine()
+        self.ApiClass = Api
 
 
         # window settings
@@ -37,7 +28,7 @@ class ManagerWindow(QtWidgets.QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         # create ui components
-        # self.call_ui_components()
+        self.call_ui_components()
 
         # maximals maximize!
         self.show()

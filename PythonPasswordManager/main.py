@@ -21,8 +21,9 @@ if __name__ == '__main__':
         # could not fine the settings file
         pass
 
+    api = Api(database_path='./database.db')
 
     # run the UI
     app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(api)
     sys.exit(app.exec())

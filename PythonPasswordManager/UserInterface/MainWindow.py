@@ -5,8 +5,11 @@ from PyQt5.QtCore import Qt
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, api, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # database connection
+        self.api = api
 
         self.setWindowTitle("Python Password Manager")
         self.setWindowIcon(QIcon('PythonPasswordManager/icons/PythonIcon.png'))
@@ -25,6 +28,10 @@ class MainWindow(QMainWindow):
         self.tab_widget()
         self.widgets()
         self.layouts()
+        self.get_notes()
+
+    def tab_changed(self):
+        self.get_notes()
 
     def tool_bar(self):
         """
@@ -54,7 +61,7 @@ class MainWindow(QMainWindow):
         self.tabs=QTabWidget()
         self.tabs.blockSignals(True)
         # TODO: flesh out method
-        # self.tabs.currentChanged.connect(self.tabChanged)
+        self.tabs.currentChanged.connect(self.tab_changed)
         self.setCentralWidget(self.tabs)
 
         # create individual tabs
@@ -214,8 +221,21 @@ class MainWindow(QMainWindow):
         pass
 
     def get_notes(self):
-        # TODO: flesh out method.
-        pass
+        # clear table
+        for i in reversed(range(self.note_table.rowCount())):
+            self.note_table.removeRow(i)
+
+        # call the database api
+        notes = self.api.get_notes()
+
+        # populate table
+        for note in notes:
+            id = str(note.Id)
+            content = str(note.Content)
+            row_number = self.note_table.rowCount()
+            self.note_table.insertRow(row_number)
+            self.note_table.setItem(row_number, 0, QTableWidgetItem(id))
+            self.note_table.setItem(row_number, 1, QTableWidgetItem(content))
 
     def get_note_by_id(self):
         # TODO: flesh out method

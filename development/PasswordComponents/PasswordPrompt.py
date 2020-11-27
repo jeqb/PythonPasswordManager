@@ -2,7 +2,8 @@ from PyQt5 import QtWidgets, QtCore
 
 from .password_prompt import Ui_password_prompt
 
-class PasswordPrompt(QtWidgets.QWidget):
+# class PasswordPrompt(QtWidgets.QWidget):
+class PasswordPrompt(QtWidgets.QFrame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
