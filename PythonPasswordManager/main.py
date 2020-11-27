@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from PyQt5 import QtWidgets
 
-from UserInterface import ManagerWindow
+from UserInterface import ManagerWindow, MainWindow
 from Settings import Settings
 from Api import Api
 
@@ -24,5 +24,5 @@ if __name__ == '__main__':
 
     # run the UI
     app = QtWidgets.QApplication(sys.argv)
-    window = ManagerWindow(settings, Api)
+    window = MainWindow()
     sys.exit(app.exec())
