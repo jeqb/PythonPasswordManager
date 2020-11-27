@@ -31,7 +31,7 @@ class AddNoteWindow(QWidget):
         self.img=QPixmap('PythonPasswordManager/icons/addproduct.png')
         self.add_note_img.setPixmap(self.img)
         self.add_note_img.setAlignment(Qt.AlignCenter)
-        self.titleText=QLabel("Add Product")
+        self.titleText=QLabel("Add Note")
         self.titleText.setAlignment(Qt.AlignCenter)
 
         # Bottom Layout Widgets
@@ -58,6 +58,7 @@ class AddNoteWindow(QWidget):
         # add bottom_layout widgets
         self.bottom_layout.addRow(QLabel("Content: "), self.note_entry)
         self.bottom_layout.addRow(QLabel(""), self.submit_button)
+        self.bottom_layout.addRow(QLabel(""), self.cancel_button)
         self.bottom_frame.setLayout(self.bottom_layout)
 
         # attach everyone

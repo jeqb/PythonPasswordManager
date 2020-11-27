@@ -74,7 +74,10 @@ def get_note_by_id(root_widget):
 
 
 def create_note(root_widget):
-    # TODO: flesh out method
+    """
+    Creates the AddNoteWindow on the screen. This window
+    then handles the adding of the note to the database.
+    """
     api = root_widget.api
     root_widget.new_note = AddNoteWindow(api)
 
