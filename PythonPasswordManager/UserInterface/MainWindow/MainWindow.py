@@ -75,6 +75,10 @@ class MainWindow(QMainWindow):
         # tab_one widget
         # main left layout widget
         self.password_table = QTableWidget()
+        # makes clicks select the whole row
+        self.password_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # disallows the editing of tables
+        self.password_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.password_table.setColumnCount(7)
         self.password_table.setColumnHidden(0,True)
         self.password_table.setHorizontalHeaderItem(0,QTableWidgetItem("Password Id"))
@@ -115,6 +119,10 @@ class MainWindow(QMainWindow):
 
         # tab_two widgets
         self.note_table=QTableWidget()
+        # makes clicks select the whole row
+        self.note_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # disallows the editing of tables
+        self.note_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.note_table.setColumnCount(2)
         self.note_table.setHorizontalHeaderItem(0,QTableWidgetItem("Id"))
         self.note_table.setHorizontalHeaderItem(1,QTableWidgetItem("Content"))
