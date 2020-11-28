@@ -4,12 +4,14 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 from PIL import Image
 
-from .Actions import cancel, add_note
+from .Actions import cancel, add_note, get_selected_note_data, populate_note_fields
 
 class AddNoteWindow(QDialog):
     def __init__(self, parent_widget, api):
-        # "None, Qt.WindowCloseButtonHint" removes question mark, but ensures close button
+        # "None, Qt.WindowCloseButtonHint" removes question mark
         super().__init__(None, Qt.WindowCloseButtonHint)
+        # removes close button
+        self.setWindowFlag(Qt.WindowCloseButtonHint, False)
 
         # keep a reference to the main UI window
         self.parent_widget = parent_widget
@@ -23,6 +25,12 @@ class AddNoteWindow(QDialog):
         self.setFixedSize(self.size())
 
         self.create_ui()
+
+        # check if it's in edit mode. if yes, populate with selected note
+        if parent_widget.edit_note_mode:
+            selected_data = get_selected_note_data(self)
+            populate_note_fields(self, selected_data)
+
         self.show()
 
     def create_ui(self):

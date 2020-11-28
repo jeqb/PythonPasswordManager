@@ -51,15 +51,8 @@ def populate_note_table(parent_widget):
 
 
 def select_note(parent_widget):
-    active_row = parent_widget.note_table.currentRow()
-    row_values = {
-        'Id': parent_widget.note_table.item(active_row, 0).text(),
-        'Content': parent_widget.note_table.item(active_row, 1).text(),
-    }
-
-    print('active_row ', active_row)
-    print(row_values)
-
+    parent_widget.edit_note_mode = True
+    create_note(parent_widget)
 
 def get_notes(parent_widget):
     # clear table

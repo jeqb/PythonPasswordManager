@@ -12,6 +12,9 @@ class MainWindow(QMainWindow):
         # database connection
         self.api = api
 
+        self.edit_note_mode = False
+        self.edit_password_mode = False
+
         self.setWindowTitle("Python Password Manager")
         self.setWindowIcon(QIcon('PythonPasswordManager/icons/PythonIcon.png'))
         self.setGeometry(450,150,1350,750)
