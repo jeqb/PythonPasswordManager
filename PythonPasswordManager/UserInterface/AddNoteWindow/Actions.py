@@ -19,9 +19,17 @@ def add_note(parent_widget):
         QMessageBox.information(parent_widget, "Missing Info", message)
     else:
         try:
-            # create the note in the database
-            api = parent_widget.api
-            parent_widget.api.add_note(note_content)
+            if parent_widget.parent_widget.edit_note_mode:
+                # update and existing note
+                update_data = {
+                    'Id': parent_widget.active_note_id,
+                    'Content': note_content
+                }
+
+                parent_widget.api.update_note(**update_data)   
+            else:
+                # create the note in the database
+                parent_widget.api.add_note(note_content)
 
             # update the table in the main window
             parent_widget.parent_widget.tab_changed()
@@ -72,3 +80,5 @@ def populate_note_fields(parent_widget, data):
     content = data['Content']
 
     parent_widget.note_entry.setText(content)
+    # need to store this somewhere for use with the db
+    parent_widget.active_note_id = data['Id']

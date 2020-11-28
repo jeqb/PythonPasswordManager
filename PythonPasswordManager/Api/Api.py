@@ -30,7 +30,17 @@ class Api():
 
         return result
 
+
     def add_note(self, content_string):
         note = Note(Content=content_string)
 
         self.note_store.create_note(note)
+
+
+    def update_note(self, **kwargs):
+        note = Note(
+            Id = kwargs['Id'],
+            Content = kwargs['Content']
+        )
+
+        self.note_store.update_note(note)
