@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
-from .Actions import get_notes, create_password, create_note, select_password
+from .Actions import get_notes, create_password, create_note, select_password, select_note
 
 class MainWindow(QMainWindow):
     def __init__(self, api, *args, **kwargs):
@@ -129,7 +129,7 @@ class MainWindow(QMainWindow):
         self.note_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.Stretch)
         self.note_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
         # TODO: flesh out method
-        # self.membersTable.doubleClicked.connect(self.selectedMember)
+        self.note_table.doubleClicked.connect(lambda: select_note(self))
         self.note_search_text=QLabel("Search")
         self.note_search_entry=QLineEdit()
         self.note_search_entry.setPlaceholderText("Search by Content")
