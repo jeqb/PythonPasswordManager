@@ -6,9 +6,10 @@ from PIL import Image
 
 from .Actions import cancel, add_note
 
-class AddNoteWindow(QWidget):
+class AddNoteWindow(QDialog):
     def __init__(self, parent_widget, api):
-        super().__init__()
+        # "None, Qt.WindowCloseButtonHint" removes question mark, but ensures close button
+        super().__init__(None, Qt.WindowCloseButtonHint)
 
         # keep a reference to the main UI window
         self.parent_widget = parent_widget

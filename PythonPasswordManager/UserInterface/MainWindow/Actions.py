@@ -91,6 +91,7 @@ def create_note(parent_widget):
     """
     api = parent_widget.api
     parent_widget.new_note = AddNoteWindow(parent_widget, api)
+    parent_widget.new_note.exec_()
 
 
 def update_note(parent_widget):
