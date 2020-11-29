@@ -77,7 +77,7 @@ class NoteStore:
 
         example usage:
             delete_me = Note(Id=12, Content="This note has been updated")
-            c.delete_note(delete_me)
+            note_store.delete_note(delete_me)
         """
         session = Session(self.engine)
         session.query(Note).filter(Note.Id == delete_note.Id).delete()
