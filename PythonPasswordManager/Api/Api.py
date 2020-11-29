@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 
-from Storage import NoteStore, Note
+from Storage import NoteStore, Note, EntryStore, Entry
 
 class Api():
     """
@@ -11,6 +11,7 @@ class Api():
         self.connection_string = 'sqlite:///' + self.database_path
         self.engine = create_engine(self.connection_string)
         self.note_store = NoteStore(self.engine)
+        self.entry_store = EntryStore(self.engine)
 
 
     def test_database_connection(self):
@@ -57,5 +58,11 @@ class Api():
 
     def search_note_by_content(self, search_string):
         results = self.note_store.search_note_by_content(search_string)
+
+        return results
+
+
+    def get_passwords(self):
+        results = self.entry_store.get_entries()
 
         return results
