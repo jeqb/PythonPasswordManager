@@ -1,3 +1,5 @@
+import traceback
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
@@ -93,5 +95,48 @@ def update_note(parent_widget):
 
 
 def delete_note(parent_widget):
-    # TODO: flesh out method
-    pass
+    """
+    Delete the note entry that is hilighted in the table.
+    """
+    api = parent_widget.api
+
+    note_data = get_selected_note_data(parent_widget)
+
+    if note_data['Id'] == None:
+        QMessageBox.information(parent_widget, "Error", "Must select a note to delete")
+    else:
+        try:
+            # delete the note
+            api.delete_note(**note_data)
+
+            # update the table in the main window
+            parent_widget.tab_changed()
+        except Exception as e:
+            traceback_string = traceback.format_exc()
+            e_message = str(e)
+
+            message = f"An error has occurred.\nMessage is: \
+                {e_message}\nTraceback is: {traceback_string}"
+
+            QMessageBox.information(parent_widget, "Error has occurred", message)
+
+
+def get_selected_note_data(parent_widget):
+    """
+    Look at the note table. See if a row is selected. if yes,
+    grab that data and return it. else return None values.
+    """
+    active_row = parent_widget.note_table.currentRow()
+
+    if active_row >= 0:
+        row_values = {
+            'Id': parent_widget.note_table.item(active_row, 0).text(),
+            'Content': parent_widget.note_table.item(active_row, 1).text(),
+        }
+
+        return row_values
+    else:
+        return {
+            'Id': None,
+            'Content': None
+        }

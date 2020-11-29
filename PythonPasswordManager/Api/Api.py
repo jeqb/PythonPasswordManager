@@ -44,3 +44,12 @@ class Api():
         )
 
         self.note_store.update_note(note)
+
+
+    def delete_note(self, **kwargs):
+        note = Note(
+            Id = kwargs['Id'],
+            Content = kwargs['Content']
+        )
+
+        self.note_store.delete_note(note)

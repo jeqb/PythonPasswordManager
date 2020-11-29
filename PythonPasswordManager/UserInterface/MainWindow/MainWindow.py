@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         # Delete Password Button
         self.delete_password_button = QAction(QIcon('PythonPasswordManager/icons/add.png'),"Delete Password",self)
         self.tool_bar.addAction(self.delete_password_button)
-        self.add_password_button.triggered.connect(lambda: delete_password(self))
+        self.delete_password_button.triggered.connect(lambda: delete_password(self))
         self.tool_bar.addSeparator()
 
         # Add Note Button
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
         # Delete Note Button
         self.delete_note_button = QAction(QIcon('PythonPasswordManager/icons/users.png'),"Delete Note",self)
         self.tool_bar.addAction(self.delete_note_button)
-        self.add_note_button.triggered.connect(lambda: delete_note(self))
+        self.delete_note_button.triggered.connect(lambda: delete_note(self))
         self.tool_bar.addSeparator()
 
     def tab_widget(self):
