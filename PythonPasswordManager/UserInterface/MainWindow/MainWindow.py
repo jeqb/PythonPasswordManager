@@ -3,7 +3,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
-from .Actions import get_notes, create_password, create_note, select_password, select_note, delete_password, delete_note
+from .Actions import (
+    get_notes, create_password, create_note, select_password,
+    select_note, delete_password, delete_note,
+    search_note_by_content, check_if_blank
+)
 
 class MainWindow(QMainWindow):
     def __init__(self, api, *args, **kwargs):
@@ -147,9 +151,9 @@ class MainWindow(QMainWindow):
         self.note_search_text=QLabel("Search")
         self.note_search_entry=QLineEdit()
         self.note_search_entry.setPlaceholderText("Search by Content")
+        self.note_search_entry.textChanged.connect(lambda: check_if_blank(self))
         self.note_search_button=QPushButton("Search")
-        # TODO: flesh out method
-        # self.memberSearchButton.clicked.connect(self.searchMembers)
+        self.note_search_button.clicked.connect(lambda: search_note_by_content(self))
 
     def layouts(self):
         # tab 1 layous

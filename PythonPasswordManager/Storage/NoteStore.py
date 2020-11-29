@@ -82,3 +82,22 @@ class NoteStore:
         session = Session(self.engine)
         session.query(Note).filter(Note.Id == delete_note.Id).delete()
         session.commit()
+        session.close()
+
+
+    def search_note_by_content(self, search_string):
+        """
+        Given a string of text, search for it in the "Content" column
+        using "LIKE" + wildcard operators
+
+        example usage:
+            search_string = "Some Note Text"
+            search_results = search_string.search_note_by_content(search_string)
+        """
+        wildcard_search = '%' + search_string + '%'
+
+        session = Session(self.engine)
+        results = session.query(Note).filter(Note.Content.like(wildcard_search))
+        session.close()
+
+        return results

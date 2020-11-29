@@ -79,6 +79,33 @@ def get_note_by_id(parent_widget):
     pass
 
 
+def search_note_by_content(parent_widget):
+    """
+    Powers the Search button on the right side of the Notes Tab.
+    Given a text entered in the note_search_entry, search the Content
+    column of the note table using a wildcard.
+
+    Callout: This may need to be async for performance in the future.
+    """
+    # do the wildcard search
+    api = parent_widget.api
+    search_text = parent_widget.note_search_entry.text()
+    search_results = api.search_note_by_content(search_text)
+
+    # clear table
+    for i in reversed(range(parent_widget.note_table.rowCount())):
+        parent_widget.note_table.removeRow(i)
+
+    # populate table
+    for note in search_results:
+        id = str(note.Id)
+        content = str(note.Content)
+        row_number = parent_widget.note_table.rowCount()
+        parent_widget.note_table.insertRow(row_number)
+        parent_widget.note_table.setItem(row_number, 0, QTableWidgetItem(id))
+        parent_widget.note_table.setItem(row_number, 1, QTableWidgetItem(content))
+
+
 def create_note(parent_widget):
     """
     Creates the AddNoteWindow on the screen. This window
@@ -140,3 +167,17 @@ def get_selected_note_data(parent_widget):
             'Id': None,
             'Content': None
         }
+
+
+def check_if_blank(parent_widget):
+    """
+    This checks if the note_search_entry object is blank when
+    the text in it changes. If it is indeed blank, that means nothing
+    is being searched for and therefore, the table needs to be repopulated in
+    case they searched for something and it reduced the table results.
+    """
+    content = parent_widget.note_search_entry.text()
+    
+    if content == "":
+        # the field has been emptied, therefore, repopulate the table.
+        get_notes(parent_widget)

@@ -53,3 +53,9 @@ class Api():
         )
 
         self.note_store.delete_note(note)
+
+
+    def search_note_by_content(self, search_string):
+        results = self.note_store.search_note_by_content(search_string)
+
+        return results
