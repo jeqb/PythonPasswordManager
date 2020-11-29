@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
-from .Actions import get_notes, create_password, create_note, select_password, select_note
+from .Actions import get_notes, create_password, create_note, select_password, select_note, delete_password, delete_note
 
 class MainWindow(QMainWindow):
     def __init__(self, api, *args, **kwargs):
@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
         # database connection
         self.api = api
 
+        # used by the AddNoteWindow and AddPasswordWindow
         self.edit_note_mode = False
         self.edit_password_mode = False
 
@@ -51,10 +52,22 @@ class MainWindow(QMainWindow):
         self.add_password_button.triggered.connect(lambda: create_password(self))
         self.tool_bar.addSeparator()
 
+        # Delete Password Button
+        self.delete_password_button = QAction(QIcon('PythonPasswordManager/icons/add.png'),"Delete Password",self)
+        self.tool_bar.addAction(self.delete_password_button)
+        self.add_password_button.triggered.connect(lambda: delete_password(self))
+        self.tool_bar.addSeparator()
+
         # Add Note Button
         self.add_note_button=QAction(QIcon('PythonPasswordManager/icons/users.png'),"Add Note",self)
         self.tool_bar.addAction(self.add_note_button)
         self.add_note_button.triggered.connect(lambda: create_note(self))
+        self.tool_bar.addSeparator()
+
+        # Delete Note Button
+        self.delete_note_button = QAction(QIcon('PythonPasswordManager/icons/users.png'),"Delete Note",self)
+        self.tool_bar.addAction(self.delete_note_button)
+        self.add_note_button.triggered.connect(lambda: delete_note(self))
         self.tool_bar.addSeparator()
 
     def tab_widget(self):
@@ -64,7 +77,6 @@ class MainWindow(QMainWindow):
         # create main tab
         self.tabs=QTabWidget()
         self.tabs.blockSignals(True)
-        # TODO: flesh out method
         self.tabs.currentChanged.connect(self.tab_changed)
         self.setCentralWidget(self.tabs)
 
@@ -93,7 +105,7 @@ class MainWindow(QMainWindow):
         self.password_table.setHorizontalHeaderItem(6,QTableWidgetItem("Note"))
         self.password_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
         self.password_table.horizontalHeader().setSectionResizeMode(2,QHeaderView.Stretch)
-        # add behavior
+        # TODO: add behavior
         self.password_table.doubleClicked.connect(lambda: select_password(self))
 
 
@@ -131,7 +143,6 @@ class MainWindow(QMainWindow):
         self.note_table.setHorizontalHeaderItem(1,QTableWidgetItem("Content"))
         self.note_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.Stretch)
         self.note_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
-        # TODO: flesh out method
         self.note_table.doubleClicked.connect(lambda: select_note(self))
         self.note_search_text=QLabel("Search")
         self.note_search_entry=QLineEdit()
