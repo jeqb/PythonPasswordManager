@@ -167,3 +167,17 @@ def get_selected_note_data(parent_widget):
             'Id': None,
             'Content': None
         }
+
+
+def check_if_blank(parent_widget):
+    """
+    This checks if the note_search_entry object is blank when
+    the text in it changes. If it is indeed blank, that means nothing
+    is being searched for and therefore, the table needs to be repopulated in
+    case they searched for something and it reduced the table results.
+    """
+    content = parent_widget.note_search_entry.text()
+    
+    if content == "":
+        # the field has been emptied, therefore, repopulate the table.
+        get_notes(parent_widget)
