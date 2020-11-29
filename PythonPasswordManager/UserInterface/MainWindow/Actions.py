@@ -131,6 +131,13 @@ def delete_note(parent_widget):
 
     if note_data['Id'] == None:
         QMessageBox.information(parent_widget, "Error", "Must select a note to delete")
+        return
+
+    message_respnse = QMessageBox.question(parent_widget, "Are you sure?", "Are you sure you want to delete this Note?",
+        QMessageBox.No | QMessageBox.Yes, QMessageBox.No)
+    
+    if message_respnse == QMessageBox.No:
+        return
     else:
         try:
             # delete the note
