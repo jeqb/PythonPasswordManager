@@ -9,8 +9,8 @@ from ..AddPasswordWindow import AddPasswordWindow
 
 
 def select_password(parent_widget):
-    # TODO: flesh out method
-    pass
+    parent_widget.edit_password_mode = True
+    create_password(parent_widget)
 
 
 def get_passwords(parent_widget):
@@ -56,7 +56,8 @@ def create_password(parent_widget):
     then handles the adding of the note to the database.
     """
     api = parent_widget.api
-    parent_widget.new_note = AddPasswordWindow(api)
+    parent_widget.new_password = AddPasswordWindow(parent_widget, api)
+    parent_widget.new_password.exec_()
 
 
 def update_password(parent_widget):

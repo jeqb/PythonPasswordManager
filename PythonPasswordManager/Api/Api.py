@@ -66,3 +66,30 @@ class Api():
         results = self.entry_store.get_entries()
 
         return results
+
+
+    def add_password(self, **kwargs):
+        entry = Entry(
+            Website = kwargs['Website'],
+            Username = kwargs['Username'],
+            Email = kwargs['Email'],
+            Password = kwargs['Password'],
+            Category = kwargs['Category'],
+            Note = kwargs['Note']
+        )
+
+        self.entry_store.create_entry(entry)
+
+
+    def update_password(self, **kwargs):
+        entry = Entry(
+            Id = kwargs['Id'],
+            Website = kwargs['Website'],
+            Username = kwargs['Username'],
+            Email = kwargs['Email'],
+            Password = kwargs['Password'],
+            Category = kwargs['Category'],
+            Note = kwargs['Note']
+        )
+
+        self.entry_store.update_entry(entry)
