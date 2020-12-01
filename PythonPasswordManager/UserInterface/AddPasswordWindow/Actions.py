@@ -73,7 +73,7 @@ def validate_password_data(password_dict):
 
     if password_dict['Password'] == '':
         raise Exception('Password is required.')
-    elif password_dict['Email'] == '' or password_dict['Username'] == '':
+    elif password_dict['Email'] == '' and password_dict['Username'] == '':
         raise Exception('Email or Username is required.')
     elif password_dict['Category'] == '':
         raise Exception("Category is required.")
