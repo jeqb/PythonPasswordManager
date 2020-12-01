@@ -10,8 +10,10 @@ from .Actions import (
 )
 
 class MainWindow(QMainWindow):
-    def __init__(self, api, *args, **kwargs):
+    def __init__(self, settings, api, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.settings = settings
 
         # database connection
         self.api = api

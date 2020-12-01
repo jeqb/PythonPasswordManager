@@ -10,20 +10,12 @@ from Api import Api
 
 if __name__ == '__main__':
     # load settings
-    cwd = os.getcwd()
-    cwd = Path(cwd)
-    settings_file = cwd / 'password_manager_settings.json'
     settings = Settings()
-
-    try:
-        settings.load_json_settings(settings_file)
-    except FileNotFoundError:
-        # could not fine the settings file
-        pass
-
+    
+    # TODO: make this go bye bye. handle instantiation within MainWindow
     api = Api(database_path='./database.db')
 
     # run the UI
     app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow(api)
+    window = MainWindow(settings, api)
     sys.exit(app.exec())
