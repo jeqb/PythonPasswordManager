@@ -8,19 +8,41 @@ from ..AddNoteWindow import AddNoteWindow
 from ..AddPasswordWindow import AddPasswordWindow
 
 
-def populate_password_table(parent_widget):
-    # TODO: flesh out method
-    pass
-
-
 def select_password(parent_widget):
-    # TODO: flesh out method
-    pass
+    parent_widget.edit_password_mode = True
+    create_password(parent_widget)
 
 
 def get_passwords(parent_widget):
-    # TODO: flesh out method.
-    pass
+    # clear table
+    for i in reversed(range(parent_widget.password_table.rowCount())):
+        parent_widget.password_table.removeRow(i)
+
+    # call the database api
+    password_entries = parent_widget.api.get_passwords()
+
+    # populate table
+    for entry in password_entries:
+        # get individual column values
+        id = str(entry.Id)
+        website = str(entry.Website)
+        username = str(entry.Username)
+        email = str(entry.Email)
+        password = str(entry.Password)
+        category = str(entry.Category)
+        note = str(entry.Note)
+
+        row_number = parent_widget.password_table.rowCount()
+        
+        # add the data to the row
+        parent_widget.password_table.insertRow(row_number)
+        parent_widget.password_table.setItem(row_number, 0, QTableWidgetItem(id))
+        parent_widget.password_table.setItem(row_number, 1, QTableWidgetItem(website))
+        parent_widget.password_table.setItem(row_number, 2, QTableWidgetItem(username))
+        parent_widget.password_table.setItem(row_number, 3, QTableWidgetItem(email))
+        parent_widget.password_table.setItem(row_number, 4, QTableWidgetItem(password))
+        parent_widget.password_table.setItem(row_number, 5, QTableWidgetItem(category))
+        parent_widget.password_table.setItem(row_number, 6, QTableWidgetItem(note))
 
 
 def get_password_by_id(parent_widget):
@@ -34,7 +56,8 @@ def create_password(parent_widget):
     then handles the adding of the note to the database.
     """
     api = parent_widget.api
-    parent_widget.new_note = AddPasswordWindow(api)
+    parent_widget.new_password = AddPasswordWindow(parent_widget, api)
+    parent_widget.new_password.exec_()
 
 
 def update_password(parent_widget):

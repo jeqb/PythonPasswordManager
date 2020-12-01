@@ -87,6 +87,7 @@ class EntryStore:
         """
         update_dict = {
             Entry.Id: updated_entry.Id,
+            Entry.Website: updated_entry.Website,
             Entry.Username: updated_entry.Username,
             Entry.Email: updated_entry.Email,
             Entry.Password: updated_entry.Password,

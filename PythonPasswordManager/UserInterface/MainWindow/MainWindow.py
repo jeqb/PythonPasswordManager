@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
-    search_note_by_content, check_if_blank
+    search_note_by_content, check_if_blank, get_passwords
 )
 
 class MainWindow(QMainWindow):
@@ -38,9 +38,11 @@ class MainWindow(QMainWindow):
         self.widgets()
         self.layouts()
         get_notes(self)
+        get_passwords(self)
 
     def tab_changed(self):
         get_notes(self)
+        get_passwords(self)
 
     def tool_bar(self):
         """
@@ -99,7 +101,7 @@ class MainWindow(QMainWindow):
         # disallows the editing of tables
         self.password_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.password_table.setColumnCount(7)
-        self.password_table.setColumnHidden(0,True)
+        # self.password_table.setColumnHidden(0,True)
         self.password_table.setHorizontalHeaderItem(0,QTableWidgetItem("Password Id"))
         self.password_table.setHorizontalHeaderItem(1,QTableWidgetItem("Website"))
         self.password_table.setHorizontalHeaderItem(2,QTableWidgetItem("Username"))

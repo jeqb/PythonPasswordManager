@@ -3,11 +3,20 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
-from .Actions import cancel, add_password
+from .Actions import (
+    cancel, add_password, get_selected_password_data,
+    populate_password_fields
+    )
 
-class AddPasswordWindow(QWidget):
-    def __init__(self, api):
-        super().__init__()
+class AddPasswordWindow(QDialog):
+    def __init__(self, parent_widget, api):
+        # "None, Qt.WindowCloseButtonHint" removes question mark
+        super().__init__(None, Qt.WindowCloseButtonHint)
+        # removes close button
+        self.setWindowFlag(Qt.WindowCloseButtonHint, False)
+
+        # keep a reference to the main UI window
+        self.parent_widget = parent_widget
 
         # database connection
         self.api = api
@@ -18,6 +27,12 @@ class AddPasswordWindow(QWidget):
         self.setFixedSize(self.size())
 
         self.create_ui()
+
+        # check if it's in edit mode. if yes, populate with selected password
+        if parent_widget.edit_password_mode:
+            selected_data = get_selected_password_data(self)
+            populate_password_fields(self, selected_data)
+
         self.show()
 
     def create_ui(self):
