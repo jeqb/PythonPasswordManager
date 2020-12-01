@@ -69,6 +69,12 @@ def delete_password(parent_widget):
     """
     Delete the password entry that is hilighted in the table.
     """
+    # check that the password tab is active. if not, ignore.
+    IsPasswordTabActive = parent_widget.tabs.currentWidget() == parent_widget.password_tab
+
+    if not IsPasswordTabActive:
+        return
+
     api = parent_widget.api
 
     password_data = get_selected_password_data(parent_widget)
@@ -208,6 +214,12 @@ def delete_note(parent_widget):
     """
     Delete the note entry that is hilighted in the table.
     """
+    # check that the password tab is active. if not, ignore.
+    IsNoteTabActive = parent_widget.tabs.currentWidget() == parent_widget.note_tab
+
+    if not IsNoteTabActive:
+        return
+
     api = parent_widget.api
 
     note_data = get_selected_note_data(parent_widget)
