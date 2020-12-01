@@ -1,4 +1,4 @@
-import sys,os
+import os
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
@@ -10,9 +10,33 @@ from .Actions import (
 )
 
 class MainWindow(QMainWindow):
+    """
+    Main UI for the application.
+
+    startup routine:
+        1. get database directory from settings ->
+            Does it have one?
+            is it valid?
+
+        2. if None exists
+                prompt to choose a database directory
+                store in settings
+
+        3. instantiate Api class with database directory
+                create_tables(declarative_base_instance, engine)
+
+        4. check database for DecryptionCheck table
+
+        5. if not exists
+                prompt use to creat a password
+                using password, create DecryptionCheck table
+
+        6. start main ui (I think that's about it)
+    """
     def __init__(self, settings, api, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # applicaiton settings
         self.settings = settings
 
         # database connection
@@ -22,10 +46,36 @@ class MainWindow(QMainWindow):
         self.edit_note_mode = False
         self.edit_password_mode = False
 
+        # window properties and dimensions
         self.setWindowTitle("Python Password Manager")
         self.setWindowIcon(QIcon('PythonPasswordManager/icons/PythonIcon.png'))
         self.setGeometry(450,150,1350,750)
         self.setFixedSize(self.size())
+
+
+        # startup routine
+        # 1.
+        if hasattr(self.settings, 'database_file_path'):
+            if self.settings.database_file_path is None:
+                # File Path was a None value
+                valid_dir = False
+            elif os.path.exists(self.settings.database_file_path):
+                # a valid file was found along that path
+                valid_dir = True
+            else:
+                # no valid file was found
+                valid_dir = False
+        else:
+            # File path property did not exist
+            valid_dir = False
+
+        # 2.
+        if not valid_dir:
+            # TODO: Make database directory prompt
+            # also need to figure out the order in which to render the ui
+            # TODO: Take database file path and store in settings file
+            pass
+
         
         self.create_ui()
 
