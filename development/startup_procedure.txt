@@ -1,0 +1,15 @@
+1. check for password_manager_settings.json
+    if exists:
+        read it ->
+            get database directory
+    else:
+        create it
+        prompt for database directory -> store in password_manager_settings.json
+        prompt for new password -> encrypt test table with it
+2. try to connect to database
+    if can't connect:
+        create new database
+3. ask for password
+4. test decryption with password
+    there will be a test decryption table for this
+5. on successful decryption, proceed to main ui layout
