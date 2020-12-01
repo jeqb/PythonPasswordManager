@@ -42,7 +42,6 @@ def add_password(parent_widget):
             # update an existing password
             password_data['Id'] = parent_widget.active_password_id
             parent_widget.api.update_password(**password_data)
-            print(f'try to update: {password_data}')
         else:
             # create password entry in database
             parent_widget.api.add_password(**password_data)

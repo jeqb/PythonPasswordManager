@@ -93,3 +93,17 @@ class Api():
         )
 
         self.entry_store.update_entry(entry)
+
+
+    def delete_password(self, **kwargs):
+        entry = Entry(
+            Id = kwargs['Id'],
+            Website = kwargs['Website'],
+            Username = kwargs['Username'],
+            Email = kwargs['Email'],
+            Password = kwargs['Password'],
+            Category = kwargs['Category'],
+            Note = kwargs['Note']
+        )
+
+        self.entry_store.delete_entry(entry)
