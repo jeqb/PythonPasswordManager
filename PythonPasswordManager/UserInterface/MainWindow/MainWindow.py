@@ -3,6 +3,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
+from Api import Api
+from Storage import Base, create_tables, create_database_engine
+
 from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
@@ -33,14 +36,11 @@ class MainWindow(QMainWindow):
 
         6. start main ui (I think that's about it)
     """
-    def __init__(self, settings, api, *args, **kwargs):
+    def __init__(self, settings, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # applicaiton settings
         self.settings = settings
-
-        # database connection
-        self.api = api
 
         # used by the AddNoteWindow and AddPasswordWindow
         self.edit_note_mode = False
@@ -51,6 +51,8 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon('PythonPasswordManager/icons/PythonIcon.png'))
         self.setGeometry(450,150,1350,750)
         self.setFixedSize(self.size())
+        # show a blank window to signify the application has started.
+        self.show()
 
 
         # startup routine
@@ -70,10 +72,6 @@ class MainWindow(QMainWindow):
             valid_dir = False
 
 
-        # show a blank window to signify the application has started.
-        self.show()
-
-
         # 2.
         if not valid_dir:
             while not valid_dir:
@@ -82,10 +80,38 @@ class MainWindow(QMainWindow):
                 
                 valid_dir = os.path.exists(db_dir)
 
-                self.settings.database_file_path = db_dir
+                if not valid_dir:
+                    continue
+                else:
+                    db_dir = db_dir + '/database.db'
 
-                self.settings.export_settings_to_json('password_manager_settings.json')
+                    self.settings.database_file_path = db_dir
 
+                    self.settings.export_settings_to_json('password_manager_settings.json')
+
+            # create the missing database after a valid_dir is chosen and saved
+            engine = create_database_engine(
+                db_directory=self.settings.database_file_path
+                )
+            create_tables(Base, engine)
+
+
+        # 3.
+        # database connection
+        self.api = Api(
+            database_path=self.settings.database_file_path
+            )
+
+
+        # 4.
+        # TODO: Go through Key verificaiton shpeel.
+
+
+        # 5.
+        
+        # TODO: using password, create DecryptionCheck table
+
+        # JUST SHOW CREATE ADD PASSWORD PROMPT FOR NOW WHILE WE BUILD IT
 
         # self.create_ui()
 
