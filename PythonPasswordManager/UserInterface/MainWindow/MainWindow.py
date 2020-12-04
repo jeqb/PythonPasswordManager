@@ -69,17 +69,27 @@ class MainWindow(QMainWindow):
             # File path property did not exist
             valid_dir = False
 
+
+        # show a blank window to signify the application has started.
+        self.show()
+
+
         # 2.
         if not valid_dir:
-            # TODO: Make database directory prompt
-            # also need to figure out the order in which to render the ui
-            # TODO: Take database file path and store in settings file
-            pass
+            while not valid_dir:
+                db_dir = QFileDialog.getExistingDirectory(self,
+                    "Choose Database Directory")
+                
+                valid_dir = os.path.exists(db_dir)
 
-        
-        self.create_ui()
+                self.settings.database_file_path = db_dir
 
-        self.show()
+                self.settings.export_settings_to_json('password_manager_settings.json')
+
+
+        # self.create_ui()
+
+        # self.show()
 
     def create_ui(self):
         """
