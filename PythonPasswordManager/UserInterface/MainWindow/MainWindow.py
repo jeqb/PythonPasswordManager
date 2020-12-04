@@ -12,6 +12,8 @@ from .Actions import (
     search_note_by_content, check_if_blank, get_passwords
 )
 
+from ..CreatePasswordWindow import CreatePasswordWindow
+
 class MainWindow(QMainWindow):
     """
     Main UI for the application.
@@ -112,6 +114,8 @@ class MainWindow(QMainWindow):
         # TODO: using password, create DecryptionCheck table
 
         # JUST SHOW CREATE ADD PASSWORD PROMPT FOR NOW WHILE WE BUILD IT
+        self.create_password_prompt = CreatePasswordWindow(self)
+        self.create_password_prompt.exec_()
 
         # self.create_ui()
 
