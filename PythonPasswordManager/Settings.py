@@ -2,6 +2,8 @@ import json
 import os
 from pathlib import Path
 
+from Common.Constants import SETTINGS_FILE_NAME
+
 class Settings(dict):
     """
     This class is to be instantiated on startup. It should correspond
@@ -12,8 +14,6 @@ class Settings(dict):
     auto generated.
     """
 
-    FILE_NAME = 'password_manager_settings.json'
-
     def __init__(self):
         # settings that live in password_manager_settings.json
         self.encryption_salt = None
@@ -23,7 +23,7 @@ class Settings(dict):
         # construct settings file path
         cwd = os.getcwd()
         cwd = Path(cwd)
-        file_path = cwd / self.FILE_NAME
+        file_path = cwd / SETTINGS_FILE_NAME
 
         # try to load the settings
         try:

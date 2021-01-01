@@ -5,11 +5,13 @@ from PyQt5.QtCore import Qt
 
 from Api import Api
 from Storage import Base, create_tables, create_database_engine
+from Security import PasswordTools
+from Common.Constants import SETTINGS_FILE_NAME
 
 from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
-    search_note_by_content, check_if_blank, get_passwords
+    search_note_by_content, check_if_blank, get_passwords, update_password
 )
 
 from ..CreatePasswordWindow import CreatePasswordWindow
@@ -26,6 +28,9 @@ class MainWindow(QMainWindow):
         2. if None exists
                 prompt to choose a database directory
                 store in settings
+
+        2.5 is Salt in settings?
+                if no -> create salt, store in settings
 
         3. instantiate Api class with database directory
                 create_tables(declarative_base_instance, engine)
@@ -89,13 +94,27 @@ class MainWindow(QMainWindow):
 
                     self.settings.database_file_path = db_dir
 
-                    self.settings.export_settings_to_json('password_manager_settings.json')
+                    self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
 
             # create the missing database after a valid_dir is chosen and saved
             engine = create_database_engine(
                 db_directory=self.settings.database_file_path
                 )
             create_tables(Base, engine)
+
+
+        # 2.5
+        if hasattr(self.settings, 'encryption_salt'):
+            if self.settings.encryption_salt is None:
+                salt = PasswordTools.make_salt()
+                salty_string = PasswordTools.salt_to_string(salt)
+
+                self.settings.encryption_salt = salty_string
+                self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
+            else:
+                # TODO: find a way to verify it is a valid salt.
+                # maybe just try converting the string back?
+                pass
 
 
         # 3.
