@@ -1,4 +1,5 @@
 from Security import Encryptor, PasswordTools
+from Common import DECRYPTED_DATABASE_NAME, ENCRYPTED_DATABASE_NAME
 
 class EncryptionHandler():
     """
@@ -25,12 +26,8 @@ class EncryptionHandler():
         salt_string is the encoded string form from the json file
         password_string is whatever the user passes in string form
         """
-        # CONSTANT - not the best approach. needs to be a constant in common
-        self.decrypted_name = "decrypted_password_database.db"
-        self.encrypted_name = "encrypted_password_database.db"
-
         self.database_path = kwargs['database_path']
-        self.database_folder = self.database_path.replace(self.encrypted_name, '')
+        self.database_folder = self.database_path.replace(ENCRYPTED_DATABASE_NAME, '')
 
         # convert salt_string to bytes
         salt = PasswordTools.string_to_salt_bytes(kwargs['salt_string'])
@@ -41,8 +38,8 @@ class EncryptionHandler():
 
 
     def encrypt_database(self):
-        decrypted_file_path = self.database_folder + self.decrypted_name
-        encrypted_output = self.database_folder + self.encrypted_name
+        decrypted_file_path = self.database_folder + DECRYPTED_DATABASE_NAME
+        encrypted_output = self.database_folder + ENCRYPTED_DATABASE_NAME
 
         # do the deed
         Encryptor.file_encrypt(self.key, decrypted_file_path, encrypted_output)
@@ -51,8 +48,8 @@ class EncryptionHandler():
 
 
     def decrypt_database(self):
-        decrypted_file_path = self.database_folder + self.decrypted_name
-        encrypted_file = self.database_folder + self.encrypted_name
+        decrypted_file_path = self.database_folder + DECRYPTED_DATABASE_NAME
+        encrypted_file = self.database_folder + ENCRYPTED_DATABASE_NAME
 
         Encryptor.file_decrypt(self.key, encrypted_file, decrypted_file_path)
 
