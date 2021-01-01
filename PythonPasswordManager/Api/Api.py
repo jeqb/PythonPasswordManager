@@ -2,16 +2,22 @@ from sqlalchemy import create_engine
 
 from Storage import NoteStore, Note, EntryStore, Entry
 
+from .EncryptionHandler import EncryptionHandler
+
 class Api():
     """
     The Ui will use this for behavior and actions.
     """
-    def __init__(self, database_path):
-        self.database_path = database_path
+    # def __init__(self, database_path):
+    def __init__(self, **kwargs):
+        self.database_path = kwargs['database_folder_path']
         self.connection_string = 'sqlite:///' + self.database_path
         self.engine = create_engine(self.connection_string)
         self.note_store = NoteStore(self.engine)
         self.entry_store = EntryStore(self.engine)
+
+        # EncryptionHandler
+        self.handler = EncryptionHandler(**kwargs)
 
 
     def test_database_connection(self):
@@ -19,11 +25,19 @@ class Api():
         Check to see if system can connect to database given a database path
         """
         try:
-            connection = self.engine.connect()
+            self.handler.decrypt_database()
         except Exception as e:
             raise e
-        finally:
-            connection.close()
+        else:
+            self.handler.encrypt_database()
+
+
+    def decrypt_database(self):
+        self.handler.decrypt_database()
+
+
+    def encrypt_database(self):
+        self.handler.encrypt_database()
 
 
     def get_notes(self):

@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from Api import Api
 from Storage import Base, create_tables, create_database_engine
 from Security import PasswordTools
-from Common.Constants import SETTINGS_FILE_NAME
+from Common.Constants import SETTINGS_FILE_NAME, DECRYPTED_DATABASE_NAME
 
 from .Actions import (
     get_notes, create_password, create_note, select_password,
@@ -15,39 +15,37 @@ from .Actions import (
 )
 
 from ..CreatePasswordWindow import CreatePasswordWindow
+from ..PasswordPromptWindow import PasswordPromptWindow
 
 class MainWindow(QMainWindow):
     """
     Main UI for the application.
 
-    startup routine:
-        1. get database directory from settings ->
-            Does it have one?
-            is it valid?
+    NEW startup routine:
+        1. Does it have both a database path and a salt?
+            if either is missing, need to create
+                brand new for both and save to settings.
+                For database, make prompt pop up.
+                Then ask user for new password.
+                Lastly, instantiate Api class and
+                    encrypt database.
+        
+        2. If both exist:
+            2.1 prompt for password
+            2.2. attempt decryption
+                    if decryption fails:
+                        tell them & reprompt
 
-        2. if None exists
-                prompt to choose a database directory
-                store in settings
-
-        2.5 is Salt in settings?
-                if no -> create salt, store in settings
-
-        3. instantiate Api class with database directory
-                create_tables(declarative_base_instance, engine)
-
-        4. check database for DecryptionCheck table
-
-        5. if not exists
-                prompt use to creat a password
-                using password, create DecryptionCheck table
-
-        6. start main ui (I think that's about it)
+        3. start main ui (I think that's about it)
     """
     def __init__(self, settings, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # applicaiton settings
         self.settings = settings
+
+        # deliberate. for the startup routine
+        self.api = None
 
         # used by the AddNoteWindow and AddPasswordWindow
         self.edit_note_mode = False
@@ -62,25 +60,21 @@ class MainWindow(QMainWindow):
         self.show()
 
 
+
         # startup routine
         # 1.
-        if hasattr(self.settings, 'database_file_path'):
-            if self.settings.database_file_path is None:
-                # File Path was a None value
-                valid_dir = False
-            elif os.path.exists(self.settings.database_file_path):
-                # a valid file was found along that path
-                valid_dir = True
-            else:
-                # no valid file was found
-                valid_dir = False
-        else:
-            # File path property did not exist
+        # check that settings has the required properties and not empty or invalid path
+        # if the settings are not valid, create a new database.
+        if not hasattr(self.settings, 'database_folder_path') or \
+            not hasattr(self.settings, 'encryption_salt') or \
+            self.settings.encryption_salt is None or \
+            self.settings.encryption_salt == '' or \
+            self.settings.database_folder_path is None or \
+            self.settings.database_folder_path == '' or \
+            not os.path.exists(self.settings.database_folder_path):
+
+            # prompt for database path
             valid_dir = False
-
-
-        # 2.
-        if not valid_dir:
             while not valid_dir:
                 db_dir = QFileDialog.getExistingDirectory(self,
                     "Choose Database Directory")
@@ -90,51 +84,63 @@ class MainWindow(QMainWindow):
                 if not valid_dir:
                     continue
                 else:
-                    db_dir = db_dir + '/database.db'
+                    # db_dir = db_dir + '/' + DECRYPTED_DATABASE_NAME # remove file name from path. just use folder.
 
-                    self.settings.database_file_path = db_dir
+                    self.settings.database_folder_path = db_dir
 
                     self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
 
             # create the missing database after a valid_dir is chosen and saved
             engine = create_database_engine(
-                db_directory=self.settings.database_file_path
+                db_directory=self.settings.database_folder_path + '/' + DECRYPTED_DATABASE_NAME
                 )
             create_tables(Base, engine)
+            
+
+            # create a new salt
+            salt = PasswordTools.make_salt()
+            salty_string = PasswordTools.salt_to_string(salt)
+
+            self.settings.encryption_salt = salty_string
+            self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
 
 
-        # 2.5
-        if hasattr(self.settings, 'encryption_salt'):
-            if self.settings.encryption_salt is None:
-                salt = PasswordTools.make_salt()
-                salty_string = PasswordTools.salt_to_string(salt)
+            # prompt password
+            self.password_prompt = PasswordPromptWindow(self)
+            self.password_prompt.exec_()
+            # password = self.password_submission
+            # TODO: validate password strength
 
-                self.settings.encryption_salt = salty_string
-                self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
-            else:
-                # TODO: find a way to verify it is a valid salt.
-                # maybe just try converting the string back?
-                pass
+            # encrypt new database
+            self.api = Api(
+                database_folder_path=self.settings.database_folder_path,
+                salt_string=self.settings.encryption_salt,
+                password_string=self.password_submission
+                )
+
+            self.api.encrypt_database()
+
+
+
+        # 2.
+        # prompt password if have not already
+        self.password_prompt = PasswordPromptWindow(self)
+        self.password_prompt.exec_()
+        # password = self.password_submission
+        # TODO: validate password strength
 
 
         # 3.
-        # database connection
-        self.api = Api(
-            database_path=self.settings.database_file_path
-            )
+        # create database connection if it's not there already
+        if self.api is None:
+            self.api = Api(
+                database_folder_path=self.settings.database_folder_path,
+                salt_string=self.settings.encryption_salt,
+                password_string=self.password_submission
+                )
 
-
-        # 4.
-        # TODO: Go through Key verificaiton shpeel.
-
-
-        # 5.
-        
-        # TODO: using password, create DecryptionCheck table
-
-        # JUST SHOW CREATE ADD PASSWORD PROMPT FOR NOW WHILE WE BUILD IT
-        self.create_password_prompt = CreatePasswordWindow(self)
-        self.create_password_prompt.exec_()
+        # check the password validity
+        self.api.test_database_connection()
 
         # self.create_ui()
 

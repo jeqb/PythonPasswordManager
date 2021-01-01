@@ -37,11 +37,10 @@ class EncryptionHandler():
         salt_string is the encoded string form from the json file
         password_string is whatever the user passes in string form
         """
-
-        self.database_path = kwargs['database_path']
-        self.database_folder = self.database_path.replace(DECRYPTED_DATABASE_NAME, '')
         
-        self.connection_string = 'sqlite:///' + self.database_path
+        self.database_folder = kwargs['database_folder_path']
+        
+        self.connection_string = 'sqlite:///' + self.database_folder + DECRYPTED_DATABASE_NAME
         self.engine = create_engine(self.connection_string)
         self.note_store = NoteStore(self.engine)
         self.entry_store = EntryStore(self.engine)
@@ -55,8 +54,8 @@ class EncryptionHandler():
 
 
     def encrypt_database(self):
-        decrypted_file_path = self.database_folder + DECRYPTED_DATABASE_NAME
-        encrypted_output = self.database_folder + ENCRYPTED_DATABASE_NAME
+        decrypted_file_path = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
+        encrypted_output = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
 
         Encryptor.file_encrypt(self.key, decrypted_file_path, encrypted_output)
 
@@ -65,8 +64,8 @@ class EncryptionHandler():
 
 
     def decrypt_database(self):
-        decrypted_file_path = self.database_folder + DECRYPTED_DATABASE_NAME
-        encrypted_file_path = self.database_folder + ENCRYPTED_DATABASE_NAME
+        decrypted_file_path = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
+        encrypted_file_path = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
 
         Encryptor.file_decrypt(self.key, encrypted_file_path, decrypted_file_path)
 
