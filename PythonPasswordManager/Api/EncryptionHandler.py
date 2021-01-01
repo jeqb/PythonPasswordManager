@@ -1,5 +1,7 @@
+import os
+
 from Security import Encryptor, PasswordTools
-from Common import DECRYPTED_DATABASE_NAME, ENCRYPTED_DATABASE_NAME
+from Common.Constants import DECRYPTED_DATABASE_NAME, ENCRYPTED_DATABASE_NAME
 
 class EncryptionHandler():
     """
@@ -27,7 +29,7 @@ class EncryptionHandler():
         password_string is whatever the user passes in string form
         """
         self.database_path = kwargs['database_path']
-        self.database_folder = self.database_path.replace(ENCRYPTED_DATABASE_NAME, '')
+        self.database_folder = self.database_path.replace(DECRYPTED_DATABASE_NAME, '')
 
         # convert salt_string to bytes
         salt = PasswordTools.string_to_salt_bytes(kwargs['salt_string'])
@@ -41,19 +43,20 @@ class EncryptionHandler():
         decrypted_file_path = self.database_folder + DECRYPTED_DATABASE_NAME
         encrypted_output = self.database_folder + ENCRYPTED_DATABASE_NAME
 
-        # do the deed
         Encryptor.file_encrypt(self.key, decrypted_file_path, encrypted_output)
 
-        # TODO: need to delete unencrypted file
+        # delete unencrypted file
+        os.remove(decrypted_file_path)
 
 
     def decrypt_database(self):
         decrypted_file_path = self.database_folder + DECRYPTED_DATABASE_NAME
-        encrypted_file = self.database_folder + ENCRYPTED_DATABASE_NAME
+        encrypted_file_path = self.database_folder + ENCRYPTED_DATABASE_NAME
 
-        Encryptor.file_decrypt(self.key, encrypted_file, decrypted_file_path)
+        Encryptor.file_decrypt(self.key, encrypted_file_path, decrypted_file_path)
 
-        # TODO: need to delete encrypted file
+        # delete encrypted file
+        os.remove(encrypted_file_path)
 
 
     def get_notes(self):
