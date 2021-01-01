@@ -40,7 +40,7 @@ class EncryptionHandler():
         
         self.database_folder = kwargs['database_folder_path']
         
-        self.connection_string = 'sqlite:///' + self.database_folder + DECRYPTED_DATABASE_NAME
+        self.connection_string = 'sqlite:///' + self.database_folder + '/' + DECRYPTED_DATABASE_NAME
         self.engine = create_engine(self.connection_string)
         self.note_store = NoteStore(self.engine)
         self.entry_store = EntryStore(self.engine)

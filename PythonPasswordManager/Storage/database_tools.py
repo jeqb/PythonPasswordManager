@@ -4,13 +4,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Connection
 
+from Common.Constants import DECRYPTED_DATABASE_NAME
+
 
 def create_connection(db_directory: str='', echo: bool=False) -> Connection:
     """ Creates a database and the connection to it. db_directory is the
     database directory on the machine """
     
     if db_directory == '':
-        db_directory = Path.cwd() / 'database.db'
+        db_directory = Path.cwd() / DECRYPTED_DATABASE_NAME
         db_directory = str(db_directory)
 
     connection_string = 'sqlite:///' + db_directory
@@ -25,7 +27,7 @@ def create_database_engine(db_directory: str='', echo: bool=False):
     database directory on the machine """
     
     if db_directory == '':
-        db_directory = Path.cwd() / 'database.db'
+        db_directory = Path.cwd() / DECRYPTED_DATABASE_NAME
         db_directory = str(db_directory)
 
     connection_string = 'sqlite:///' + db_directory

@@ -41,7 +41,7 @@ class Api():
 
 
     def get_notes(self):
-        result = self.note_store.get_notes()
+        result = self.handler.get_notes()
 
         return result
 
@@ -49,7 +49,7 @@ class Api():
     def add_note(self, content_string):
         note = Note(Content=content_string)
 
-        self.note_store.create_note(note)
+        self.handler.add_note(note)
 
 
     def update_note(self, **kwargs):
@@ -58,7 +58,7 @@ class Api():
             Content = kwargs['Content']
         )
 
-        self.note_store.update_note(note)
+        self.handler.update_note(note)
 
 
     def delete_note(self, **kwargs):
@@ -67,17 +67,17 @@ class Api():
             Content = kwargs['Content']
         )
 
-        self.note_store.delete_note(note)
+        self.handler.delete_note(note)
 
 
     def search_note_by_content(self, search_string):
-        results = self.note_store.search_note_by_content(search_string)
+        results = self.handler.search_note_by_content(search_string)
 
         return results
 
 
     def get_passwords(self):
-        results = self.entry_store.get_entries()
+        results = self.handler.get_passwords()
 
         return results
 
@@ -92,7 +92,7 @@ class Api():
             Note = kwargs['Note']
         )
 
-        self.entry_store.create_entry(entry)
+        self.handler.add_password(entry)
 
 
     def update_password(self, **kwargs):
@@ -106,7 +106,7 @@ class Api():
             Note = kwargs['Note']
         )
 
-        self.entry_store.update_entry(entry)
+        self.handler.update_password(entry)
 
 
     def delete_password(self, **kwargs):
@@ -120,4 +120,4 @@ class Api():
             Note = kwargs['Note']
         )
 
-        self.entry_store.delete_entry(entry)
+        self.handler.delete_password(entry)

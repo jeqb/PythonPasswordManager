@@ -142,9 +142,9 @@ class MainWindow(QMainWindow):
         # check the password validity
         self.api.test_database_connection()
 
-        # self.create_ui()
+        self.create_ui()
 
-        # self.show()
+        self.show()
 
     def create_ui(self):
         """
