@@ -84,8 +84,6 @@ class MainWindow(QMainWindow):
                 if not valid_dir:
                     continue
                 else:
-                    # db_dir = db_dir + '/' + DECRYPTED_DATABASE_NAME # remove file name from path. just use folder.
-
                     self.settings.database_folder_path = db_dir
 
                     self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
