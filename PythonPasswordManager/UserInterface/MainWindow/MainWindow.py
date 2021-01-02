@@ -66,9 +66,6 @@ class MainWindow(QMainWindow):
         # check that settings has the required properties and not empty or invalid path
         # if the settings are not valid, create a new database.
         if not hasattr(self.settings, 'database_folder_path') or \
-            not hasattr(self.settings, 'encryption_salt') or \
-            self.settings.encryption_salt is None or \
-            self.settings.encryption_salt == '' or \
             self.settings.database_folder_path is None or \
             self.settings.database_folder_path == '' or \
             not os.path.exists(self.settings.database_folder_path):
@@ -93,14 +90,6 @@ class MainWindow(QMainWindow):
                 db_directory=self.settings.database_folder_path + '/' + DECRYPTED_DATABASE_NAME
                 )
             create_tables(Base, engine)
-            
-
-            # create a new salt
-            salt = PasswordTools.make_salt()
-            salty_string = PasswordTools.salt_to_string(salt)
-
-            self.settings.encryption_salt = salty_string
-            self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
 
 
             # prompt password
@@ -112,7 +101,6 @@ class MainWindow(QMainWindow):
             # encrypt new database
             self.api = Api(
                 database_folder_path=self.settings.database_folder_path,
-                salt_string=self.settings.encryption_salt,
                 password_string=self.password_submission
                 )
 
@@ -133,7 +121,6 @@ class MainWindow(QMainWindow):
         if self.api is None:
             self.api = Api(
                 database_folder_path=self.settings.database_folder_path,
-                salt_string=self.settings.encryption_salt,
                 password_string=self.password_submission
                 )
 

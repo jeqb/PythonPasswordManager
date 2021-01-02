@@ -45,20 +45,21 @@ class EncryptionHandler():
         self.note_store = NoteStore(self.engine)
         self.entry_store = EntryStore(self.engine)
 
-        # convert salt_string to bytes
-        salt = PasswordTools.string_to_salt_bytes(kwargs['salt_string'])
-
-        # encode password for encryption/decryption
-        key = PasswordTools.password_to_bytes(password=kwargs['password_string'], salt=salt)
-        self.key = key
+        self.password_string = kwargs['password_string']
 
 
     def encrypt_database(self):
         decrypted_input = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
         encrypted_output = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
 
-        Encryptor.encrypt_file(key=self.key, input_file=decrypted_input,
+        salt = PasswordTools.make_salt()
+        key = PasswordTools.password_to_bytes(password=self.password_string,
+            salt=salt)
+
+        Encryptor.encrypt_file(key=key, input_file=decrypted_input,
             output_file=encrypted_output)
+
+        self.attach_salt(salt)
 
         # delete unencrypted file
         os.remove(decrypted_input)
@@ -68,11 +69,68 @@ class EncryptionHandler():
         decrypted_output = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
         encrypted_input = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
 
-        Encryptor.decrypt_file(key=self.key, input_file=encrypted_input,
+        salt = self.detach_salt()
+        key = PasswordTools.password_to_bytes(password=self.password_string,
+            salt=salt)
+
+        Encryptor.decrypt_file(key=key, input_file=encrypted_input,
             output_file=decrypted_output)
 
         # delete encrypted file
         os.remove(encrypted_input)
+
+
+    def attach_salt(self, salt: bytes):
+        """
+        The database file should currently be encrypted, but no salt is attached
+        to it yet. Grab the salt from self.salt, and append it to the front of the
+        encrypted database file.
+        """
+        
+        # first verify there is an encrypted file
+        encrypted_file = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
+        if not os.path.exists(encrypted_file):
+            raise Exception("No encrypted file was found")
+        
+        # get the raw encrypted file
+        with open(encrypted_file, 'rb') as file:
+            raw_encrypted_rile = file.read()
+        
+        # do the deed
+        salty_file = salt + raw_encrypted_rile
+
+        # overwrite sodium free file with salty file
+        with open (encrypted_file, 'wb') as file:
+            file.write(salty_file)
+
+
+    def detach_salt(self) -> bytes:
+        """
+        Salt is currently appended to the front of the encrypted database file
+        as bytes. Specifically the first 16 bytes on the file are the salt.
+        Remove those bytes from the file, and store them as self.salt
+        """
+
+        # first verify there is an encrypted file
+        encrypted_file = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
+        if not os.path.exists(encrypted_file):
+            raise Exception("No encrypted file was found")
+        
+        # then open the salty file
+        with open(encrypted_file, 'rb') as file:
+            raw_salty_file = file.read()
+
+        # salt
+        salt = raw_salty_file[:16]
+
+        # remove the salt
+        sodium_free_encrypted_file = raw_salty_file[16:]
+
+        # overwrite salty file with sodium free file
+        with open (encrypted_file, 'wb') as file:
+            file.write(sodium_free_encrypted_file)
+
+        return salt
 
 
     def get_notes(self):

@@ -8,7 +8,6 @@ class Api():
     """
     The Ui will use this for behavior and actions.
     """
-    # def __init__(self, database_path):
     def __init__(self, **kwargs):
         self.database_path = kwargs['database_folder_path']
         self.connection_string = 'sqlite:///' + self.database_path
