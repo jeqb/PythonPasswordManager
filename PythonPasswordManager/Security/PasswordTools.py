@@ -2,6 +2,8 @@ import os
 import base64
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
+from Common.Constants import SETTINGS_FILE_NAME
+
 class PasswordTools():
 
     @staticmethod
@@ -57,3 +59,27 @@ class PasswordTools():
         byte_array = base64.b64decode(string)
 
         return byte_array
+
+
+    @staticmethod
+    def verify_salty_string(salty_string) -> None:
+        """
+        various checks to make sure the salt_string from the json
+        config file didn't get corrupted.
+        """
+        
+        # case 1
+        if len(salty_string) != 24:
+            # salty_string is always 24 characters long
+            raise Exception(f"Corrupted Salt in {SETTINGS_FILE_NAME}: salty_string length != 24")
+
+        # case 2
+        elif salty_string[-2:] != '==':
+            # the stored salts always have a '==' at the end of them.
+            # lame, but it works.
+            raise Exception(f"Corrupted Salt in {SETTINGS_FILE_NAME}: salty_string doesn't have a \'==\' at the end")
+
+        # case 3
+        elif len(PasswordTools.string_to_salt_bytes(salty_string)) != 16:
+            # salt is always 16 bytes long
+            raise Exception(f"Corrupted Salt in {SETTINGS_FILE_NAME}: salt length != 16 bytes")
