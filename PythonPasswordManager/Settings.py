@@ -16,10 +16,8 @@ class Settings(dict):
 
     def __init__(self):
         # settings that live in password_manager_settings.json
-        self.encryption_salt = None
-        self.database_file_path = None
-        self.valid = False
-
+        self.database_folder_path = None
+        
         # construct settings file path
         cwd = os.getcwd()
         cwd = Path(cwd)
