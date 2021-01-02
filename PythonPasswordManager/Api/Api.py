@@ -1,17 +1,24 @@
+import cryptography
 from sqlalchemy import create_engine
 
+from Common.Exceptions import InvalidPasswordException
 from Storage import NoteStore, Note, EntryStore, Entry
+
+from .EncryptionHandler import EncryptionHandler
 
 class Api():
     """
     The Ui will use this for behavior and actions.
     """
-    def __init__(self, database_path):
-        self.database_path = database_path
+    def __init__(self, **kwargs):
+        self.database_path = kwargs['database_folder_path']
         self.connection_string = 'sqlite:///' + self.database_path
         self.engine = create_engine(self.connection_string)
         self.note_store = NoteStore(self.engine)
         self.entry_store = EntryStore(self.engine)
+
+        # EncryptionHandler
+        self.handler = EncryptionHandler(**kwargs)
 
 
     def test_database_connection(self):
@@ -19,15 +26,23 @@ class Api():
         Check to see if system can connect to database given a database path
         """
         try:
-            connection = self.engine.connect()
-        except Exception as e:
-            raise e
-        finally:
-            connection.close()
+            self.handler.decrypt_database()
+        except cryptography.fernet.InvalidToken:
+            raise InvalidPasswordException("Could not decrypt database with this password.")
+        else:
+            self.handler.encrypt_database()
+
+
+    def decrypt_database(self):
+        self.handler.decrypt_database()
+
+
+    def encrypt_database(self):
+        self.handler.encrypt_database()
 
 
     def get_notes(self):
-        result = self.note_store.get_notes()
+        result = self.handler.get_notes()
 
         return result
 
@@ -35,7 +50,7 @@ class Api():
     def add_note(self, content_string):
         note = Note(Content=content_string)
 
-        self.note_store.create_note(note)
+        self.handler.add_note(note)
 
 
     def update_note(self, **kwargs):
@@ -44,7 +59,7 @@ class Api():
             Content = kwargs['Content']
         )
 
-        self.note_store.update_note(note)
+        self.handler.update_note(note)
 
 
     def delete_note(self, **kwargs):
@@ -53,17 +68,17 @@ class Api():
             Content = kwargs['Content']
         )
 
-        self.note_store.delete_note(note)
+        self.handler.delete_note(note)
 
 
     def search_note_by_content(self, search_string):
-        results = self.note_store.search_note_by_content(search_string)
+        results = self.handler.search_note_by_content(search_string)
 
         return results
 
 
     def get_passwords(self):
-        results = self.entry_store.get_entries()
+        results = self.handler.get_passwords()
 
         return results
 
@@ -78,7 +93,7 @@ class Api():
             Note = kwargs['Note']
         )
 
-        self.entry_store.create_entry(entry)
+        self.handler.add_password(entry)
 
 
     def update_password(self, **kwargs):
@@ -92,7 +107,7 @@ class Api():
             Note = kwargs['Note']
         )
 
-        self.entry_store.update_entry(entry)
+        self.handler.update_password(entry)
 
 
     def delete_password(self, **kwargs):
@@ -106,4 +121,4 @@ class Api():
             Note = kwargs['Note']
         )
 
-        self.entry_store.delete_entry(entry)
+        self.handler.delete_password(entry)

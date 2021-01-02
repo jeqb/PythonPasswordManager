@@ -1,30 +1,140 @@
-import sys,os
+import os
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
+from Api import Api
+from Storage import Base, create_tables, create_database_engine
+from Security import PasswordTools
+from Common.Constants import SETTINGS_FILE_NAME, DECRYPTED_DATABASE_NAME, ENCRYPTED_DATABASE_NAME
+from Common.Exceptions import InvalidPasswordException
+
 from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
-    search_note_by_content, check_if_blank, get_passwords
+    search_note_by_content, check_if_blank, get_passwords, update_password
 )
 
+from ..CreatePasswordWindow import CreatePasswordWindow
+from ..PasswordPromptWindow import PasswordPromptWindow
+
 class MainWindow(QMainWindow):
-    def __init__(self, api, *args, **kwargs):
+    """
+    Main UI for the application.
+
+    NEW startup routine:
+        1. Does it have both a database path and a salt?
+            if either is missing, need to create
+                brand new for both and save to settings.
+                For database, make prompt pop up.
+                Then ask user for new password.
+                Lastly, instantiate Api class and
+                    encrypt database.
+        
+        2. If both exist:
+            2.1 prompt for password
+            2.2. attempt decryption
+                    if decryption fails:
+                        tell them & reprompt
+
+        3. start main ui (I think that's about it)
+    """
+    def __init__(self, settings, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # database connection
-        self.api = api
+        # applicaiton settings
+        self.settings = settings
+
+        # deliberate. for the startup routine
+        self.api = None
 
         # used by the AddNoteWindow and AddPasswordWindow
         self.edit_note_mode = False
         self.edit_password_mode = False
 
+        # window properties and dimensions
         self.setWindowTitle("Python Password Manager")
         self.setWindowIcon(QIcon('PythonPasswordManager/icons/PythonIcon.png'))
         self.setGeometry(450,150,1350,750)
         self.setFixedSize(self.size())
-        
+        # show a blank window to signify the application has started.
+        self.show()
+
+
+
+        # startup routine
+        # 1.
+        # check that settings has the required properties and not empty or invalid path
+        # if the settings are not valid, create a new database.
+        if not hasattr(self.settings, 'database_folder_path') or \
+            self.settings.database_folder_path is None or \
+            self.settings.database_folder_path == '' or \
+            not os.path.exists(self.settings.database_folder_path) or \
+            not os.path.exists(self.settings.database_folder_path + '/' + ENCRYPTED_DATABASE_NAME):
+
+            # prompt for database path
+            valid_dir = False
+            while not valid_dir:
+                db_dir = QFileDialog.getExistingDirectory(self,
+                    "Choose Database Directory")
+                
+                valid_dir = os.path.exists(db_dir)
+
+                if not valid_dir:
+                    continue
+                else:
+                    self.settings.database_folder_path = db_dir
+
+                    self.settings.export_settings_to_json(SETTINGS_FILE_NAME)
+
+            # create the missing database after a valid_dir is chosen and saved
+            engine = create_database_engine(
+                db_directory=self.settings.database_folder_path + '/' + DECRYPTED_DATABASE_NAME
+                )
+            create_tables(Base, engine)
+
+
+            # prompt password
+            self.password_prompt = PasswordPromptWindow(self)
+            self.password_prompt.exec_()
+            # password = self.password_submission
+            # TODO: validate password strength
+
+            # encrypt new database
+            self.api = Api(
+                database_folder_path=self.settings.database_folder_path,
+                password_string=self.password_submission
+                )
+
+            self.api.encrypt_database()
+
+
+        successful_decryption=False
+        while not successful_decryption:
+            # 2.
+            # prompt password if have not already
+            self.password_prompt = PasswordPromptWindow(self)
+            self.password_prompt.exec_()
+            # password = self.password_submission
+            # TODO: validate password strength
+
+            # 3.
+            # create database connection if it's not there already
+            self.api = Api(
+                database_folder_path=self.settings.database_folder_path,
+                password_string=self.password_submission
+                )
+
+            try:
+                # check the password validity
+                self.api.test_database_connection()
+                successful_decryption=True
+            except InvalidPasswordException:
+                continue
+            else:
+                successful_decryption=True
+
+
         self.create_ui()
 
         self.show()
