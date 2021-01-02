@@ -97,7 +97,7 @@ class NoteStore:
         wildcard_search = '%' + search_string + '%'
 
         session = Session(self.engine)
-        results = session.query(Note).filter(Note.Content.like(wildcard_search))
+        results = session.query(Note).filter(Note.Content.like(wildcard_search)).all()
         session.close()
 
         return results

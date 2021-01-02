@@ -54,23 +54,25 @@ class EncryptionHandler():
 
 
     def encrypt_database(self):
-        decrypted_file_path = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
+        decrypted_input = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
         encrypted_output = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
 
-        Encryptor.file_encrypt(self.key, decrypted_file_path, encrypted_output)
+        Encryptor.encrypt_file(key=self.key, input_file=decrypted_input,
+            output_file=encrypted_output)
 
         # delete unencrypted file
-        os.remove(decrypted_file_path)
+        os.remove(decrypted_input)
 
 
     def decrypt_database(self):
-        decrypted_file_path = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
-        encrypted_file_path = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
+        decrypted_output = self.database_folder + '/' + DECRYPTED_DATABASE_NAME
+        encrypted_input = self.database_folder + '/' + ENCRYPTED_DATABASE_NAME
 
-        Encryptor.file_decrypt(self.key, encrypted_file_path, decrypted_file_path)
+        Encryptor.decrypt_file(key=self.key, input_file=encrypted_input,
+            output_file=decrypted_output)
 
         # delete encrypted file
-        os.remove(encrypted_file_path)
+        os.remove(encrypted_input)
 
 
     def get_notes(self):
