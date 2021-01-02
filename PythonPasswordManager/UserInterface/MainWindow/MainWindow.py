@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from Api import Api
 from Storage import Base, create_tables, create_database_engine
 from Security import PasswordTools
-from Common.Constants import SETTINGS_FILE_NAME, DECRYPTED_DATABASE_NAME
+from Common.Constants import SETTINGS_FILE_NAME, DECRYPTED_DATABASE_NAME, ENCRYPTED_DATABASE_NAME
 from Common.Exceptions import InvalidPasswordException
 
 from .Actions import (
@@ -69,7 +69,8 @@ class MainWindow(QMainWindow):
         if not hasattr(self.settings, 'database_folder_path') or \
             self.settings.database_folder_path is None or \
             self.settings.database_folder_path == '' or \
-            not os.path.exists(self.settings.database_folder_path):
+            not os.path.exists(self.settings.database_folder_path) or \
+            not os.path.exists(self.settings.database_folder_path + '/' + ENCRYPTED_DATABASE_NAME):
 
             # prompt for database path
             valid_dir = False
