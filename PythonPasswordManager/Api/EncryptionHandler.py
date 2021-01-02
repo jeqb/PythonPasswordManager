@@ -1,4 +1,5 @@
 import os
+import cryptography
 from sqlalchemy import create_engine
 
 from Storage import NoteStore, Note, EntryStore, Entry
@@ -73,11 +74,15 @@ class EncryptionHandler():
         key = PasswordTools.password_to_bytes(password=self.password_string,
             salt=salt)
 
-        Encryptor.decrypt_file(key=key, input_file=encrypted_input,
-            output_file=decrypted_output)
-
-        # delete encrypted file
-        os.remove(encrypted_input)
+        try:
+            Encryptor.decrypt_file(key=key, input_file=encrypted_input,
+                output_file=decrypted_output)
+        except cryptography.fernet.InvalidToken as e:
+            self.attach_salt(salt)
+            raise e
+        else:
+            # delete encrypted file
+            os.remove(encrypted_input)
 
 
     def attach_salt(self, salt: bytes):

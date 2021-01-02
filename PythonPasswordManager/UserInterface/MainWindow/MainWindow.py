@@ -7,6 +7,7 @@ from Api import Api
 from Storage import Base, create_tables, create_database_engine
 from Security import PasswordTools
 from Common.Constants import SETTINGS_FILE_NAME, DECRYPTED_DATABASE_NAME
+from Common.Exceptions import InvalidPasswordException
 
 from .Actions import (
     get_notes, create_password, create_note, select_password,
@@ -107,25 +108,31 @@ class MainWindow(QMainWindow):
             self.api.encrypt_database()
 
 
+        successful_decryption=False
+        while not successful_decryption:
+            # 2.
+            # prompt password if have not already
+            self.password_prompt = PasswordPromptWindow(self)
+            self.password_prompt.exec_()
+            # password = self.password_submission
+            # TODO: validate password strength
 
-        # 2.
-        # prompt password if have not already
-        self.password_prompt = PasswordPromptWindow(self)
-        self.password_prompt.exec_()
-        # password = self.password_submission
-        # TODO: validate password strength
-
-
-        # 3.
-        # create database connection if it's not there already
-        if self.api is None:
+            # 3.
+            # create database connection if it's not there already
             self.api = Api(
                 database_folder_path=self.settings.database_folder_path,
                 password_string=self.password_submission
                 )
 
-        # check the password validity
-        self.api.test_database_connection()
+            try:
+                # check the password validity
+                self.api.test_database_connection()
+                successful_decryption=True
+            except InvalidPasswordException:
+                continue
+            else:
+                successful_decryption=True
+
 
         self.create_ui()
 

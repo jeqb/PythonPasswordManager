@@ -1,5 +1,7 @@
+import cryptography
 from sqlalchemy import create_engine
 
+from Common.Exceptions import InvalidPasswordException
 from Storage import NoteStore, Note, EntryStore, Entry
 
 from .EncryptionHandler import EncryptionHandler
@@ -25,8 +27,8 @@ class Api():
         """
         try:
             self.handler.decrypt_database()
-        except Exception as e:
-            raise e
+        except cryptography.fernet.InvalidToken:
+            raise InvalidPasswordException("Could not decrypt database with this password.")
         else:
             self.handler.encrypt_database()
 
