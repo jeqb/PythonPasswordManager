@@ -24,7 +24,7 @@ def add_password(parent_widget):
         'Username': parent_widget.username_entry.text(),
         'Email': parent_widget.email_entry.text(),
         'Password': parent_widget.password_entry.text(),
-        'Category': parent_widget.category_entry.text(),
+        'Category': parent_widget.category_entry.currentText(),
         'Note': parent_widget.note_entry.text()
     }
 
