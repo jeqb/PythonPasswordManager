@@ -45,3 +45,4 @@ database.db
 decrypted_password_database.db
 encrypted_password_database.db
 password_manager_settings.json
+.vscode
