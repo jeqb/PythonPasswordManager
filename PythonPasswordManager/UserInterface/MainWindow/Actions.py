@@ -283,3 +283,28 @@ def check_if_blank(parent_widget):
     if content == "":
         # the field has been emptied, therefore, repopulate the table.
         get_notes(parent_widget)
+
+
+def clear_radio_buttons(parent_widget):
+    """
+    Clears all readio buttons, and unfilters Password Table -> just refresh
+    """
+    # https://stackoverflow.com/a/1732385
+    radio_buttons = [
+        parent_widget.email_radiobutton,
+        parent_widget.financial_radiobutton,
+        parent_widget.shopping_radiobutton,
+        parent_widget.social_radiobutton
+    ]
+
+    for button in radio_buttons:
+        button.setAutoExclusive(False)
+
+    for button in radio_buttons:
+        button.setChecked(False)
+
+    for button in radio_buttons:
+        button.setAutoExclusive(True)
+
+    # repopulate table
+    get_passwords(parent_widget)

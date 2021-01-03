@@ -13,7 +13,8 @@ from Common.Enums import Category
 from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
-    search_note_by_content, check_if_blank, get_passwords, update_password
+    search_note_by_content, check_if_blank, get_passwords, update_password,
+    clear_radio_buttons
 )
 
 from ..CreatePasswordWindow import CreatePasswordWindow
@@ -244,7 +245,7 @@ class MainWindow(QMainWindow):
         self.social_radiobutton = QRadioButton("Social")
         self.clear_button=QPushButton("Clear")
         # TODO: flesh out method
-        # self.listButton.clicked.connect(self.listProducts)
+        self.clear_button.clicked.connect(lambda: clear_radio_buttons(self))
         # TODO: flesh out style sheet
         # self.listButton.setStyleSheet(style.listButtonStyle())
 
