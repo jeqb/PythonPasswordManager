@@ -1,7 +1,8 @@
 import enum
 
 class Category(enum.Enum):
-    Email = 0
-    Financial = 1
-    Shopping = 2
-    Social = 3
+    General = 0
+    Email = 1
+    Financial = 2
+    Shopping = 3
+    Social = 4

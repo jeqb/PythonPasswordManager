@@ -291,6 +291,7 @@ def clear_radio_buttons(parent_widget):
     """
     # https://stackoverflow.com/a/1732385
     radio_buttons = [
+        parent_widget.general_radiobutton,
         parent_widget.email_radiobutton,
         parent_widget.financial_radiobutton,
         parent_widget.shopping_radiobutton,

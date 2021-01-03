@@ -239,6 +239,7 @@ class MainWindow(QMainWindow):
         # right middle layout widgets
         # TODO: Repurpose this to filter by categor.
         # TODO: It can search the database for distict categories and dynamically render here?
+        self.general_radiobutton = QRadioButton("General")
         self.email_radiobutton = QRadioButton("Email")
         self.financial_radiobutton = QRadioButton("Financial")
         self.shopping_radiobutton = QRadioButton("Shopping")
@@ -295,6 +296,7 @@ class MainWindow(QMainWindow):
         self.top_group_box.setLayout(self.right_top_layout)
 
         # right middle layout widget
+        self.right_middle_layout.addWidget(self.general_radiobutton)
         self.right_middle_layout.addWidget(self.email_radiobutton)
         self.right_middle_layout.addWidget(self.financial_radiobutton)
         self.right_middle_layout.addWidget(self.shopping_radiobutton)
