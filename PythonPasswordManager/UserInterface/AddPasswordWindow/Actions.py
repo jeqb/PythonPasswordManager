@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt
 
 import traceback
 
+from Common.Enums import Category
+
 def cancel(parent_widget):
     """
     Closes the window
@@ -122,14 +124,14 @@ def populate_password_fields(parent_widget, data):
     username = data['Username']
     email = data['Email']
     password = data['Password']
-    category = data['Category']
+    category = Category[data['Category']]
     note = data['Note']
 
     parent_widget.website_entry.setText(website)
     parent_widget.username_entry.setText(username)
     parent_widget.email_entry.setText(email)
     parent_widget.password_entry.setText(password)
-    parent_widget.category_entry.setText(category)
+    parent_widget.category_entry.setCurrentIndex(category.value)
     parent_widget.note_entry.setText(note)
 
     # need to store this somewhere for use with the db
