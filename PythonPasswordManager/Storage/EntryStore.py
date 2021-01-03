@@ -119,3 +119,42 @@ class EntryStore:
         session = Session(self.engine)
         session.query(Entry).filter(Entry.Id == delete_entry.Id).delete()
         session.commit()
+
+    
+    def search_entry_by_website(self, website_string):
+        """
+        Given a string of text, search for it in the "Website" column
+        using "LIKE" + wildcard operators
+
+        example usage:
+            search_string = "Some Note Text"
+            search_results = entry_store.search_enry_by_website(search_string)
+        """
+        wildcard_search = '%' + website_string + '%'
+
+        session = Session(self.engine)
+        results = session.query(Entry).filter(Entry.Website.like(wildcard_search)).all()
+        session.close()
+
+        return results
+
+
+    def search_entry_by_website_and_category(self, website_string, category_string):
+        """
+        Given a string of text, search for it in the "Website" column
+        using "LIKE" + wildcard operators
+        
+        example usage:
+            search_string = "Some Note Text"
+            search_results = entry_store.search_enry_by_website(search_string)
+        """
+        wildcard_search = '%' + website_string + '%'
+
+        session = Session(self.engine)
+        results = session.query(Entry).filter(
+            Entry.Website.like(wildcard_search),
+            Entry.Category == category_string
+            ).all()
+        session.close()
+
+        return results

@@ -122,3 +122,16 @@ class Api():
         )
 
         self.handler.delete_password(entry)
+
+
+    def search_password_by_website(self, website_string):
+        results = self.handler.search_password_by_website(website_string)
+        
+        return results
+
+
+    def search_password_by_website_and_category(self, website_string, category_string):
+        results = self.handler.search_password_by_website_and_category(
+            website_string, category_string)
+        
+        return results

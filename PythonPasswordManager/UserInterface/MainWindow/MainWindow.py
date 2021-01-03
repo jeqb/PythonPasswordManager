@@ -14,7 +14,7 @@ from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
     search_note_by_content, check_if_blank, get_passwords, update_password,
-    clear_radio_buttons
+    clear_radio_buttons, search_passwords_by_website
 )
 
 from ..CreatePasswordWindow import CreatePasswordWindow
@@ -227,11 +227,10 @@ class MainWindow(QMainWindow):
 
         # Create widgets to go in the Password Search QGroupBox
         self.search_text=QLabel("Search")
-        self.search_entry=QLineEdit()
-        self.search_entry.setPlaceholderText("Search by Website")
-        self.search_button=QPushButton("Search")
-        # TODO: flesh out method
-        # self.searchButton.clicked.connect(self.searchProducts)
+        self.website_search_entry=QLineEdit()
+        self.website_search_entry.setPlaceholderText("Search by Website")
+        self.website_search_button=QPushButton("Search")
+        self.website_search_button.clicked.connect(lambda: search_passwords_by_website(self))
         # TODO: flesh out style sheet
         # self.searchButton.setStyleSheet(style.searchButtonStyle())
 
@@ -291,8 +290,8 @@ class MainWindow(QMainWindow):
 
         # right top layout widget
         self.right_top_layout.addWidget(self.search_text)
-        self.right_top_layout.addWidget(self.search_entry)
-        self.right_top_layout.addWidget(self.search_button)
+        self.right_top_layout.addWidget(self.website_search_entry)
+        self.right_top_layout.addWidget(self.website_search_button)
         self.top_group_box.setLayout(self.right_top_layout)
 
         # right middle layout widget

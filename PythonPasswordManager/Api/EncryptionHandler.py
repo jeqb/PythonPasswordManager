@@ -198,3 +198,21 @@ class EncryptionHandler():
         self.decrypt_database()
         self.entry_store.delete_entry(entry)
         self.encrypt_database()
+
+
+    def search_password_by_website(self, website_string):
+        self.decrypt_database()
+        results = self.entry_store.search_entry_by_website(website_string)
+        self.encrypt_database()
+
+        return results
+
+
+    def search_password_by_website_and_category(self, website_string, category_string):
+        self.decrypt_database()
+        results = self.entry_store.search_entry_by_website_and_category(
+            website_string, category_string
+            )
+        self.encrypt_database()
+
+        return results

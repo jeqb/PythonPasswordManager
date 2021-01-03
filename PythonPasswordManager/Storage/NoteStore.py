@@ -92,7 +92,7 @@ class NoteStore:
 
         example usage:
             search_string = "Some Note Text"
-            search_results = search_string.search_note_by_content(search_string)
+            search_results = note_store.search_note_by_content(search_string)
         """
         wildcard_search = '%' + search_string + '%'
 

@@ -309,3 +309,71 @@ def clear_radio_buttons(parent_widget):
 
     # repopulate table
     get_passwords(parent_widget)
+
+
+def search_passwords_by_website(parent_widget):
+    """
+    Powers the "Search" button in the Password tab.
+    Callout:
+        this will search the current table values for data - meaning
+        if they have filtered by category, it will search for a website within
+        the currently selected category. If no category is selected,
+        it will just search by the website
+    """
+    website_string = parent_widget.website_search_entry.text()
+
+    # can't search by empty string
+    if website_string == '': return
+
+    # determine if any radio buttons are selected.
+    # this could be written better
+    if parent_widget.general_radiobutton.isChecked():
+        category = 'General'
+    elif parent_widget.email_radiobutton.isChecked():
+        category = 'Email'
+    elif parent_widget.financial_radiobutton.isChecked():
+        category = 'Financial'
+    elif parent_widget.shopping_radiobutton.isChecked():
+        category = 'Shopping'
+    elif parent_widget.social_radiobutton.isChecked():
+        category = 'Social'
+    else:
+        category = None
+
+    # search for the data
+    if category is None:
+        password_entries = parent_widget.api.search_password_by_website(website_string)
+        if len(password_entries) == 0: return
+    else:
+        password_entries = parent_widget.api.search_password_by_website_and_category(
+            website_string, category)
+        if len(password_entries) == 0: return
+
+    # clear table
+    for i in reversed(range(parent_widget.password_table.rowCount())):
+        parent_widget.password_table.removeRow(i)
+
+    # populate table
+    for entry in password_entries:
+        # get individual column values
+        id = str(entry.Id)
+        website = str(entry.Website)
+        username = str(entry.Username)
+        email = str(entry.Email)
+        password = str(entry.Password)
+        category = str(entry.Category)
+        note = str(entry.Note)
+
+        row_number = parent_widget.password_table.rowCount()
+        
+        # add the data to the row
+        parent_widget.password_table.insertRow(row_number)
+        parent_widget.password_table.setItem(row_number, 0, QTableWidgetItem(id))
+        parent_widget.password_table.setItem(row_number, 1, QTableWidgetItem(website))
+        parent_widget.password_table.setItem(row_number, 2, QTableWidgetItem(username))
+        parent_widget.password_table.setItem(row_number, 3, QTableWidgetItem(email))
+        parent_widget.password_table.setItem(row_number, 4, QTableWidgetItem(password))
+        parent_widget.password_table.setItem(row_number, 5, QTableWidgetItem(category))
+        parent_widget.password_table.setItem(row_number, 6, QTableWidgetItem(note))
+
+    # MAKE IT POPULATE THE TABLES WHEN YOU CLEAR THE SEARCH
