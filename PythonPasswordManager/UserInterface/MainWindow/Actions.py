@@ -21,28 +21,7 @@ def get_passwords(parent_widget):
     # call the database api
     password_entries = parent_widget.api.get_passwords()
 
-    # populate table
-    for entry in password_entries:
-        # get individual column values
-        id = str(entry.Id)
-        website = str(entry.Website)
-        username = str(entry.Username)
-        email = str(entry.Email)
-        password = str(entry.Password)
-        category = str(entry.Category)
-        note = str(entry.Note)
-
-        row_number = parent_widget.password_table.rowCount()
-        
-        # add the data to the row
-        parent_widget.password_table.insertRow(row_number)
-        parent_widget.password_table.setItem(row_number, 0, QTableWidgetItem(id))
-        parent_widget.password_table.setItem(row_number, 1, QTableWidgetItem(website))
-        parent_widget.password_table.setItem(row_number, 2, QTableWidgetItem(username))
-        parent_widget.password_table.setItem(row_number, 3, QTableWidgetItem(email))
-        parent_widget.password_table.setItem(row_number, 4, QTableWidgetItem(password))
-        parent_widget.password_table.setItem(row_number, 5, QTableWidgetItem(category))
-        parent_widget.password_table.setItem(row_number, 6, QTableWidgetItem(note))
+    populate_password_table(parent_widget, password_entries)
 
 
 def get_password_by_id(parent_widget):
@@ -136,31 +115,15 @@ def get_selected_password_data(parent_widget):
         }
 
 
-def populate_note_table(parent_widget):
-    # TODO: flesh out method
-    pass
-
-
 def select_note(parent_widget):
     parent_widget.edit_note_mode = True
     create_note(parent_widget)
 
 def get_notes(parent_widget):
-    # clear table
-    for i in reversed(range(parent_widget.note_table.rowCount())):
-        parent_widget.note_table.removeRow(i)
-
     # call the database api
-    notes = parent_widget.api.get_notes()
+    search_results = parent_widget.api.get_notes()
 
-    # populate table
-    for note in notes:
-        id = str(note.Id)
-        content = str(note.Content)
-        row_number = parent_widget.note_table.rowCount()
-        parent_widget.note_table.insertRow(row_number)
-        parent_widget.note_table.setItem(row_number, 0, QTableWidgetItem(id))
-        parent_widget.note_table.setItem(row_number, 1, QTableWidgetItem(content))
+    populate_note_table(parent_widget, search_results)
 
 
 def get_note_by_id(parent_widget):
@@ -181,12 +144,19 @@ def search_note_by_content(parent_widget):
     search_text = parent_widget.note_search_entry.text()
     search_results = api.search_note_by_content(search_text)
 
+    populate_note_table(parent_widget, search_results)
+
+
+def populate_note_table(parent_widget, note_array):
+    """
+    Gets an array of notes. Populates the note table with that array
+    """
     # clear table
     for i in reversed(range(parent_widget.note_table.rowCount())):
         parent_widget.note_table.removeRow(i)
 
     # populate table
-    for note in search_results:
+    for note in note_array:
         id = str(note.Id)
         content = str(note.Content)
         row_number = parent_widget.note_table.rowCount()
@@ -350,18 +320,7 @@ def search_passwords_by_website(parent_widget):
 
     # determine if any radio buttons are selected.
     # this could be written better
-    if parent_widget.general_radiobutton.isChecked():
-        category = 'General'
-    elif parent_widget.email_radiobutton.isChecked():
-        category = 'Email'
-    elif parent_widget.financial_radiobutton.isChecked():
-        category = 'Financial'
-    elif parent_widget.shopping_radiobutton.isChecked():
-        category = 'Shopping'
-    elif parent_widget.social_radiobutton.isChecked():
-        category = 'Social'
-    else:
-        category = None
+    category = get_radio_category(parent_widget)
 
     # search for the data
     if category is None:
@@ -370,32 +329,7 @@ def search_passwords_by_website(parent_widget):
         password_entries = parent_widget.api.search_password_by_website_and_category(
             website_string, category)
 
-    # clear table
-    for i in reversed(range(parent_widget.password_table.rowCount())):
-        parent_widget.password_table.removeRow(i)
-
-    # populate table
-    for entry in password_entries:
-        # get individual column values
-        id = str(entry.Id)
-        website = str(entry.Website)
-        username = str(entry.Username)
-        email = str(entry.Email)
-        password = str(entry.Password)
-        category = str(entry.Category)
-        note = str(entry.Note)
-
-        row_number = parent_widget.password_table.rowCount()
-        
-        # add the data to the row
-        parent_widget.password_table.insertRow(row_number)
-        parent_widget.password_table.setItem(row_number, 0, QTableWidgetItem(id))
-        parent_widget.password_table.setItem(row_number, 1, QTableWidgetItem(website))
-        parent_widget.password_table.setItem(row_number, 2, QTableWidgetItem(username))
-        parent_widget.password_table.setItem(row_number, 3, QTableWidgetItem(email))
-        parent_widget.password_table.setItem(row_number, 4, QTableWidgetItem(password))
-        parent_widget.password_table.setItem(row_number, 5, QTableWidgetItem(category))
-        parent_widget.password_table.setItem(row_number, 6, QTableWidgetItem(note))
+    populate_password_table(parent_widget, password_entries)
 
 
 def clicked_category_button(parent_widget):
