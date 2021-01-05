@@ -8,11 +8,14 @@ from Storage import Base, create_tables, create_database_engine
 from Security import PasswordTools
 from Common.Constants import SETTINGS_FILE_NAME, DECRYPTED_DATABASE_NAME, ENCRYPTED_DATABASE_NAME
 from Common.Exceptions import InvalidPasswordException
+from Common.Enums import Category
 
 from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
-    search_note_by_content, check_if_blank, get_passwords, update_password
+    search_note_by_content, check_if_blank, get_passwords, update_password,
+    clear_radio_buttons, search_passwords_by_website, is_password_field_blank,
+    clicked_category_button
 )
 
 from ..CreatePasswordWindow import CreatePasswordWindow
@@ -203,15 +206,14 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.note_tab,"Notes")
 
     def widgets(self):
-        # tab_one widget
-        # main left layout widget
+        # Create Password Table Widget
         self.password_table = QTableWidget()
         # makes clicks select the whole row
         self.password_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         # disallows the editing of tables
         self.password_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.password_table.setColumnCount(7)
-        # self.password_table.setColumnHidden(0,True)
+        self.password_table.setColumnHidden(0,True) # hides the Password Id column
         self.password_table.setHorizontalHeaderItem(0,QTableWidgetItem("Password Id"))
         self.password_table.setHorizontalHeaderItem(1,QTableWidgetItem("Website"))
         self.password_table.setHorizontalHeaderItem(2,QTableWidgetItem("Username"))
@@ -221,29 +223,46 @@ class MainWindow(QMainWindow):
         self.password_table.setHorizontalHeaderItem(6,QTableWidgetItem("Note"))
         self.password_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
         self.password_table.horizontalHeader().setSectionResizeMode(2,QHeaderView.Stretch)
-        # TODO: add behavior
         self.password_table.doubleClicked.connect(lambda: select_password(self))
 
 
-        # Right top layout widget
+        # Create widgets to go in the Password Search QGroupBox
         self.search_text=QLabel("Search")
-        self.search_entry=QLineEdit()
-        self.search_entry.setPlaceholderText("Search by Website")
-        self.search_button=QPushButton("Search")
-        # TODO: flesh out method
-        # self.searchButton.clicked.connect(self.searchProducts)
+        self.password_search_entry=QLineEdit()
+        self.password_search_entry.setPlaceholderText("Search by Website")
+        self.password_search_entry.textChanged.connect(lambda: is_password_field_blank(self))
+        self.password_search_button=QPushButton("Search")
+        self.password_search_button.clicked.connect(lambda: search_passwords_by_website(self))
         # TODO: flesh out style sheet
         # self.searchButton.setStyleSheet(style.searchButtonStyle())
 
+
         # right middle layout widgets
-        # TODO: Repurpose this to filter by categor.
-        # TODO: It can search the database for distict categories and dynamically render here?
-        self.allProducts=QRadioButton("All Products")
-        self.avaialableProducts=QRadioButton("Available")
-        self.notAvaialableProducts=QRadioButton("Not Available")
-        self.listButton=QPushButton("List")
-        # TODO: flesh out method
-        # self.listButton.clicked.connect(self.listProducts)
+        # make the radio buttons
+        self.general_radiobutton = QRadioButton("General")
+        self.email_radiobutton = QRadioButton("Email")
+        self.financial_radiobutton = QRadioButton("Financial")
+        self.shopping_radiobutton = QRadioButton("Shopping")
+        self.social_radiobutton = QRadioButton("Social")
+        self.clear_button=QPushButton("Clear")
+        # add the behavior to the radio buttons
+        self.general_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.email_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.financial_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.shopping_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.social_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        # add behavior to clear button
+        self.clear_button.clicked.connect(lambda: clear_radio_buttons(self))
         # TODO: flesh out style sheet
         # self.listButton.setStyleSheet(style.listButtonStyle())
 
@@ -274,10 +293,10 @@ class MainWindow(QMainWindow):
         self.main_right_layout=QVBoxLayout()
         self.right_top_layout=QHBoxLayout()
         self.right_middle_layout=QHBoxLayout()
-        self.top_group_box=QGroupBox("Search Box")
+        self.top_group_box=QGroupBox("Password Search")
         # TODO: flesh out style sheet
         # self.topGroupBox.setStyleSheet(style.searchBoxStyle())
-        self.middle_group_box=QGroupBox("List Box")
+        self.middle_group_box=QGroupBox("Filter By Category")
         # TODO: flesh out style sheet
         # self.middleGroupBox.setStyleSheet(style.listBoxStyle())
         self.bottom_group_box=QGroupBox()
@@ -288,15 +307,17 @@ class MainWindow(QMainWindow):
 
         # right top layout widget
         self.right_top_layout.addWidget(self.search_text)
-        self.right_top_layout.addWidget(self.search_entry)
-        self.right_top_layout.addWidget(self.search_button)
+        self.right_top_layout.addWidget(self.password_search_entry)
+        self.right_top_layout.addWidget(self.password_search_button)
         self.top_group_box.setLayout(self.right_top_layout)
 
         # right middle layout widget
-        self.right_middle_layout.addWidget(self.allProducts)
-        self.right_middle_layout.addWidget(self.avaialableProducts)
-        self.right_middle_layout.addWidget(self.notAvaialableProducts)
-        self.right_middle_layout.addWidget(self.listButton)
+        self.right_middle_layout.addWidget(self.general_radiobutton)
+        self.right_middle_layout.addWidget(self.email_radiobutton)
+        self.right_middle_layout.addWidget(self.financial_radiobutton)
+        self.right_middle_layout.addWidget(self.shopping_radiobutton)
+        self.right_middle_layout.addWidget(self.social_radiobutton)
+        self.right_middle_layout.addWidget(self.clear_button)
         self.middle_group_box.setLayout(self.right_middle_layout)
 
         self.main_right_layout.addWidget(self.top_group_box,20)
@@ -305,6 +326,10 @@ class MainWindow(QMainWindow):
         self.main_layout.addLayout(self.main_left_layout,70)
         self.main_layout.addLayout(self.main_right_layout,30)
         self.password_tab.setLayout(self.main_layout)
+        # makes the bottom_group_box sort of invisible
+        # https://stackoverflow.com/a/42485560
+        self.bottom_group_box.setFlat(True)
+        self.bottom_group_box.setStyleSheet("border:0;")
         
         # tab 2 layouts
         self.note_main_layout=QHBoxLayout()

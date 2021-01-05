@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 
+from Common.Enums import Category
+
 from .Actions import (
     cancel, add_password, get_selected_password_data,
     populate_password_fields
@@ -62,9 +64,8 @@ class AddPasswordWindow(QDialog):
         self.password_entry = QLineEdit()
         self.password_entry.setPlaceholderText("Enter Password")
 
-        # TODO: make this a drop down menu to choose limited options
-        self.category_entry = QLineEdit()
-        self.category_entry.setPlaceholderText("Choose Category")
+        self.category_entry = QComboBox()
+        self.category_entry.addItems([e.name for e in Category])
 
         self.note_entry = QLineEdit()
         self.note_entry.setPlaceholderText("Enter Note")
