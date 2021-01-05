@@ -12,8 +12,9 @@ class PasswordPromptWindow(QDialog):
 
         self.setWindowTitle("Enter Password")
         self.setWindowIcon(QIcon('PythonPasswordManager/icons/PythonIcon.png'))
-        self.setGeometry(450,150,450,200)
+        self.setGeometry(450,100,300,100)
         self.setFixedSize(self.size())
+        self.move(900, 350)
 
         self.create_ui()
         
@@ -24,11 +25,15 @@ class PasswordPromptWindow(QDialog):
         form_layout = QFormLayout()
         form_layout.setFormAlignment(Qt.AlignHCenter| Qt.AlignCenter)
         # make horizontal layout
-        horizontal_layout = QHBoxLayout()
-        horizontal_layout.addStretch()
+        horizontal_layout_one = QHBoxLayout()
+        horizontal_layout_one.addStretch()
+        horizontal_layout_two = QHBoxLayout()
+        horizontal_layout_two.addStretch()
 
         # Enter Password Label
         password_label = QLabel("Enter Password")
+        horizontal_layout_one.addWidget(password_label)
+        horizontal_layout_one.addStretch()
 
         # Password Field
         self.password_field = QLineEdit()
@@ -43,13 +48,13 @@ class PasswordPromptWindow(QDialog):
         cancel_button.clicked.connect(lambda: cancel(self))
 
         # align the buttons horizontally
-        horizontal_layout.addStretch()
-        horizontal_layout.addWidget(submit_button)
-        horizontal_layout.addWidget(cancel_button)
+        horizontal_layout_two.addWidget(submit_button)
+        horizontal_layout_two.addWidget(cancel_button)
+        horizontal_layout_two.addStretch()
 
         # add everything to the main form
-        form_layout.addRow(password_label)
+        form_layout.addRow(horizontal_layout_one)
         form_layout.addRow(self.password_field)
-        form_layout.addRow(horizontal_layout)
+        form_layout.addRow(horizontal_layout_two)
 
         self.setLayout(form_layout)

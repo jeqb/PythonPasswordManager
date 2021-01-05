@@ -7,4 +7,4 @@ def submit(parent_widget):
 
 
 def cancel(parent_widget):
-    parent_widget.close()
+    exit()
