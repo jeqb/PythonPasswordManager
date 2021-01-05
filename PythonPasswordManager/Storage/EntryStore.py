@@ -158,3 +158,20 @@ class EntryStore:
         session.close()
 
         return results
+
+
+    def search_entry_by_category(self, category_string):
+        """
+        Given a string of text, search for it in the "Category" column.
+
+        example usage:
+            search_string = "General"
+            search_results = entry_store.search_entry_by_category(category_string)
+        """
+        session = Session(self.engine)
+        results = session.query(Entry).filter(
+            Entry.Category == category_string
+            ).all()
+        session.close()
+
+        return results

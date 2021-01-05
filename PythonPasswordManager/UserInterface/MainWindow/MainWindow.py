@@ -14,7 +14,8 @@ from .Actions import (
     get_notes, create_password, create_note, select_password,
     select_note, delete_password, delete_note,
     search_note_by_content, check_if_blank, get_passwords, update_password,
-    clear_radio_buttons, search_passwords_by_website, is_password_field_black
+    clear_radio_buttons, search_passwords_by_website, is_password_field_blank,
+    clicked_category_button
 )
 
 from ..CreatePasswordWindow import CreatePasswordWindow
@@ -229,7 +230,7 @@ class MainWindow(QMainWindow):
         self.search_text=QLabel("Search")
         self.password_search_entry=QLineEdit()
         self.password_search_entry.setPlaceholderText("Search by Website")
-        self.password_search_entry.textChanged.connect(lambda: is_password_field_black(self))
+        self.password_search_entry.textChanged.connect(lambda: is_password_field_blank(self))
         self.password_search_button=QPushButton("Search")
         self.password_search_button.clicked.connect(lambda: search_passwords_by_website(self))
         # TODO: flesh out style sheet
@@ -237,15 +238,30 @@ class MainWindow(QMainWindow):
 
 
         # right middle layout widgets
-        # TODO: Repurpose this to filter by categor.
-        # TODO: It can search the database for distict categories and dynamically render here?
+        # make the radio buttons
         self.general_radiobutton = QRadioButton("General")
         self.email_radiobutton = QRadioButton("Email")
         self.financial_radiobutton = QRadioButton("Financial")
         self.shopping_radiobutton = QRadioButton("Shopping")
         self.social_radiobutton = QRadioButton("Social")
         self.clear_button=QPushButton("Clear")
-        # TODO: flesh out method
+        # add the behavior to the radio buttons
+        self.general_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.email_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.financial_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.shopping_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        self.social_radiobutton.clicked.connect(
+            lambda: clicked_category_button(self)
+            )
+        # add behavior to clear button
         self.clear_button.clicked.connect(lambda: clear_radio_buttons(self))
         # TODO: flesh out style sheet
         # self.listButton.setStyleSheet(style.listButtonStyle())

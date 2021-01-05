@@ -285,14 +285,22 @@ def check_if_blank(parent_widget):
         get_notes(parent_widget)
 
 
-def is_password_field_black(parent_widget):
+def is_password_field_blank(parent_widget):
     """
     Does the same thing as above
     """
     content = parent_widget.password_search_entry.text()
+    category = get_radio_category(parent_widget)
 
-    if content == "":
+    if content == "" and category is None:
+        # repopulate the table with no filters
         get_passwords(parent_widget)
+    elif content == "" and category is not None:
+        # repopulate table with the category filter
+        clicked_category_button(parent_widget)
+    else:
+        # the search field is not empty.
+        return
 
 
 def clear_radio_buttons(parent_widget):
@@ -318,7 +326,12 @@ def clear_radio_buttons(parent_widget):
         button.setAutoExclusive(True)
 
     # repopulate table
-    get_passwords(parent_widget)
+    if parent_widget.password_search_entry.text() is None or \
+        parent_widget.password_search_entry.text() == '':
+        get_passwords(parent_widget)
+
+    else:
+        search_passwords_by_website(parent_widget)
 
 
 def search_passwords_by_website(parent_widget):
@@ -356,6 +369,80 @@ def search_passwords_by_website(parent_widget):
     else:
         password_entries = parent_widget.api.search_password_by_website_and_category(
             website_string, category)
+
+    # clear table
+    for i in reversed(range(parent_widget.password_table.rowCount())):
+        parent_widget.password_table.removeRow(i)
+
+    # populate table
+    for entry in password_entries:
+        # get individual column values
+        id = str(entry.Id)
+        website = str(entry.Website)
+        username = str(entry.Username)
+        email = str(entry.Email)
+        password = str(entry.Password)
+        category = str(entry.Category)
+        note = str(entry.Note)
+
+        row_number = parent_widget.password_table.rowCount()
+        
+        # add the data to the row
+        parent_widget.password_table.insertRow(row_number)
+        parent_widget.password_table.setItem(row_number, 0, QTableWidgetItem(id))
+        parent_widget.password_table.setItem(row_number, 1, QTableWidgetItem(website))
+        parent_widget.password_table.setItem(row_number, 2, QTableWidgetItem(username))
+        parent_widget.password_table.setItem(row_number, 3, QTableWidgetItem(email))
+        parent_widget.password_table.setItem(row_number, 4, QTableWidgetItem(password))
+        parent_widget.password_table.setItem(row_number, 5, QTableWidgetItem(category))
+        parent_widget.password_table.setItem(row_number, 6, QTableWidgetItem(note))
+
+
+def clicked_category_button(parent_widget):
+    """
+    If a password category gets clicked, figure out which one,
+    see if there's text in the website search. Then apply the necessary
+    filters.
+    """
+    # grab search data
+    category = get_radio_category(parent_widget)
+    website_string = parent_widget.password_search_entry.text()
+
+    if website_string is None or website_string == '':
+        # search by category only.
+        password_entries = parent_widget.api.search_password_by_category(category)
+    else:
+        # search by website and category
+        password_entries = parent_widget.api.search_password_by_website_and_category(
+            website_string, category)
+
+    populate_password_table(parent_widget, password_entries)
+
+
+def get_radio_category(parent_widget):
+    """
+    Figure out which radio button on the Password
+    tab is checked.
+    """
+    if parent_widget.general_radiobutton.isChecked():
+        return 'General'
+    elif parent_widget.email_radiobutton.isChecked():
+        return 'Email'
+    elif parent_widget.financial_radiobutton.isChecked():
+        return 'Financial'
+    elif parent_widget.shopping_radiobutton.isChecked():
+        return 'Shopping'
+    elif parent_widget.social_radiobutton.isChecked():
+        return 'Social'
+    else:
+        return None
+
+
+def populate_password_table(parent_widget, password_entries):
+    """
+    Given the results from the database, populate the password
+    table with it.
+    """
 
     # clear table
     for i in reversed(range(parent_widget.password_table.rowCount())):

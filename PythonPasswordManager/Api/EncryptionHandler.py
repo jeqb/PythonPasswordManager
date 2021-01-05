@@ -216,3 +216,11 @@ class EncryptionHandler():
         self.encrypt_database()
 
         return results
+
+    
+    def search_password_by_category(self, category_string):
+        self.decrypt_database()
+        results = self.entry_store.search_entry_by_category(category_string)
+        self.encrypt_database()
+
+        return results
