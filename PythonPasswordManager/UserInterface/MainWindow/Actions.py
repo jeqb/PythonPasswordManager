@@ -285,6 +285,16 @@ def check_if_blank(parent_widget):
         get_notes(parent_widget)
 
 
+def is_password_field_black(parent_widget):
+    """
+    Does the same thing as above
+    """
+    content = parent_widget.password_search_entry.text()
+
+    if content == "":
+        get_passwords(parent_widget)
+
+
 def clear_radio_buttons(parent_widget):
     """
     Clears all readio buttons, and unfilters Password Table -> just refresh
@@ -320,7 +330,7 @@ def search_passwords_by_website(parent_widget):
         the currently selected category. If no category is selected,
         it will just search by the website
     """
-    website_string = parent_widget.website_search_entry.text()
+    website_string = parent_widget.password_search_entry.text()
 
     # can't search by empty string
     if website_string == '': return
@@ -343,11 +353,9 @@ def search_passwords_by_website(parent_widget):
     # search for the data
     if category is None:
         password_entries = parent_widget.api.search_password_by_website(website_string)
-        if len(password_entries) == 0: return
     else:
         password_entries = parent_widget.api.search_password_by_website_and_category(
             website_string, category)
-        if len(password_entries) == 0: return
 
     # clear table
     for i in reversed(range(parent_widget.password_table.rowCount())):
@@ -375,5 +383,3 @@ def search_passwords_by_website(parent_widget):
         parent_widget.password_table.setItem(row_number, 4, QTableWidgetItem(password))
         parent_widget.password_table.setItem(row_number, 5, QTableWidgetItem(category))
         parent_widget.password_table.setItem(row_number, 6, QTableWidgetItem(note))
-
-    # MAKE IT POPULATE THE TABLES WHEN YOU CLEAR THE SEARCH
