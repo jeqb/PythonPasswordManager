@@ -1,3 +1,4 @@
-sqlalchemy
-cryptography
-pyqt5
+sqlalchemy==1.4.44
+cryptography==38.0.4
+pyqt5==5.15.7
+Pillow==9.3.0
